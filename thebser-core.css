@@ -1,0 +1,198 @@
+/* ===== THEBSER DESIGN SYSTEM (CORE TOKENS, MODALS & SUBJECTS) ===== */
+:root {
+    --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    --card-bg: #ffffff;
+    --card-border: #e2e8f0;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --primary: #6366f1;
+    --primary-hover: #4f46e5;
+    --shadow-color: rgba(0, 0, 0, 0.08);
+    --input-bg: #f8fafc;
+}
+
+.dark-theme {
+    --bg-gradient: linear-gradient(135deg, #090d16 0%, #0f172a 100%);
+    --card-bg: #131b2e;
+    --card-border: #1e293b;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --primary: #818cf8;
+    --primary-hover: #6366f1;
+    --shadow-color: rgba(0, 0, 0, 0.4);
+    --input-bg: #0b1120;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg-gradient) !important;
+    color: var(--text-main) !important;
+    min-height: 100vh;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.theme-card {
+    background-color: var(--card-bg) !important;
+    border-color: var(--card-border) !important;
+    color: var(--text-main) !important;
+}
+
+.theme-text-muted {
+    color: var(--text-muted) !important;
+}
+
+.dark-theme h1, .dark-theme h2, .dark-theme h3, .dark-theme h4 {
+    color: #f8fafc !important;
+}
+
+/* ЭТАЛОННОЕ МОДАЛЬНОЕ ОКНО */
+.modal-blur-backdrop {
+    background-color: rgba(0, 0, 0, 0.8) !important;
+    backdrop-filter: blur(14px) !important;
+    -webkit-backdrop-filter: blur(14px) !important;
+}
+
+.modal-dialog-zoom {
+    animation: thebserModalZoom 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes thebserModalZoom {
+    0% {
+        opacity: 0;
+        transform: scale(0.95) translateY(14px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* КНОПКИ ВЫБОРА И ФИЛЬТРОВ */
+.thebser-tab-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+.thebser-tab-btn.inactive {
+    background-color: var(--card-bg) !important;
+    border: 1px solid var(--card-border) !important;
+    color: var(--text-main) !important;
+}
+
+.thebser-tab-btn.inactive:hover {
+    border-color: var(--primary) !important;
+    color: var(--primary) !important;
+}
+
+.thebser-tab-btn.active {
+    background-color: #6366f1 !important;
+    color: #ffffff !important;
+    border: 1px solid #6366f1 !important;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+}
+
+/* ЦВЕТНЫЕ ПОЛОСЫ 16 ПРЕДМЕТОВ */
+.bar-algebra { background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%); }
+.bar-geometry { background: linear-gradient(90deg, #2563eb 0%, #1d4ed8 100%); }
+.bar-probability { background: linear-gradient(90deg, #84cc16 0%, #65a30d 100%); }
+.bar-russian { background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%); }
+.bar-literature { background: linear-gradient(90deg, #10b981 0%, #059669 100%); }
+.bar-physics { background: linear-gradient(90deg, #6366f1 0%, #4f46e5 100%); }
+.bar-chemistry { background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%); }
+.bar-biology { background: linear-gradient(90deg, #8b5cf6 0%, #7c3aed 100%); }
+.bar-geography { background: linear-gradient(90deg, #f97316 0%, #ea580c 100%); }
+.bar-history { background: linear-gradient(90deg, #d97706 0%, #b45309 100%); }
+.bar-informatics { background: linear-gradient(90deg, #0ea5e9 0%, #0284c7 100%); }
+.bar-english { background: linear-gradient(90deg, #ec4899 0%, #db2777 100%); }
+.bar-obzr { background: linear-gradient(90deg, #64748b 0%, #475569 100%); }
+.bar-technology { background: linear-gradient(90deg, #f43f5e 0%, #e11d48 100%); }
+.bar-pe { background: linear-gradient(90deg, #14b8a6 0%, #0f766e 100%); }
+.bar-music { background: linear-gradient(90deg, #d946ef 0%, #be185d 100%); }
+.bar-default { background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%); }
+
+.modal-blur-backdrop {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 9999 !important;
+    background-color: rgba(0, 0, 0, 0.8) !important;
+    backdrop-filter: blur(14px) !important;
+    -webkit-backdrop-filter: blur(14px) !important;
+}
+
+/* ===== ЦВЕТНЫЕ БЕЙДЖИ СТАТУСОВ (ДЗ И ТЕСТЫ) ===== */
+.thebser-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+/* Зелёный (Можно сдать / Успешно) */
+.badge-status-green {
+    background-color: rgba(16, 185, 129, 0.15) !important;
+    color: #059669 !important;
+    border: 1px solid rgba(16, 185, 129, 0.4) !important;
+}
+.dark-theme .badge-status-green {
+    background-color: rgba(16, 185, 129, 0.22) !important;
+    color: #34d399 !important;
+    border-color: rgba(52, 211, 153, 0.5) !important;
+}
+
+/* Оранжево-янтарный (Завтра! / Скоро сдача) */
+.badge-status-amber {
+    background-color: rgba(245, 158, 11, 0.15) !important;
+    color: #d97706 !important;
+    border: 1px solid rgba(245, 158, 11, 0.45) !important;
+}
+.dark-theme .badge-status-amber {
+    background-color: rgba(245, 158, 11, 0.25) !important;
+    color: #fbbf24 !important;
+    border-color: rgba(251, 191, 36, 0.5) !important;
+}
+
+/* Красный (Сегодня! / Просрочено) */
+.badge-status-red {
+    background-color: rgba(239, 68, 68, 0.15) !important;
+    color: #dc2626 !important;
+    border: 1px solid rgba(239, 68, 68, 0.45) !important;
+    animation: badgePulse 2s infinite ease-in-out;
+}
+.dark-theme .badge-status-red {
+    background-color: rgba(239, 68, 68, 0.25) !important;
+    color: #f87171 !important;
+    border-color: rgba(248, 113, 113, 0.5) !important;
+}
+
+/* Фиолетово-синий (Запланировано) */
+.badge-status-blue {
+    background-color: rgba(99, 102, 241, 0.15) !important;
+    color: #4f46e5 !important;
+    border: 1px solid rgba(99, 102, 241, 0.4) !important;
+}
+.dark-theme .badge-status-blue {
+    background-color: rgba(99, 102, 241, 0.22) !important;
+    color: #818cf8 !important;
+    border-color: rgba(129, 140, 248, 0.5) !important;
+}
+
+@keyframes badgePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.04); }
+}

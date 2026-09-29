@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>theBser — Справочники 8Б</title>
+
+
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=111460868', 'ym');
+
+    ym(111460868, 'init', {ssr:true, webvisor:true, clickmap:true, referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/111460868" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+
+
+
+
+    <script>
+        const initialTheme = localStorage.getItem('thebser_theme') || 'light';
+        if (initialTheme === 'dark') {
+            document.documentElement.classList.add('dark-theme');
+        } else {
+            document.documentElement.classList.remove('dark-theme');
+        }
+    </script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="thebser-core.css">
+
+    <style>
+        .hb-card {
+            transition: all 0.25s ease;
+            cursor: pointer;
+        }
+        .hb-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 30px var(--shadow-color);
+            border-color: var(--primary) !important;
+        }
+
+        /* Фирменный скроллбар конспекта */
+        #modalContentWrapper::-webkit-scrollbar {
+            width: 6px;
+        }
+        #modalContentWrapper::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        #modalContentWrapper::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.35);
+            border-radius: 9999px;
+        }
+        #modalContentWrapper::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.7);
+        }
+    </style>
+</head>
+<body class="p-3 sm:p-6 md:p-10">
+
+    <div class="max-w-6xl mx-auto">
+        <!-- ШАПКА -->
+        <header class="flex items-center justify-between pb-6 mb-6 border-b gap-4" style="border-color: var(--card-border) !important;">
+            <div class="flex items-center gap-3">
+                <a href="index.html" class="px-3.5 py-2 rounded-2xl theme-card border hover:border-indigo-500 font-semibold text-xs transition shadow-sm">
+                    <i class="fas fa-arrow-left text-indigo-500"></i>
+                    <span>На главную</span>
+                </a>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-black flex items-center gap-2">
+                        <span>Справочники и конспекты</span>
+                        <span class="text-xs px-2 py-0.5 rounded-lg bg-indigo-500/20 text-indigo-500 font-bold uppercase">8Б</span>
+                    </h1>
+                    <p class="theme-text-muted text-xs">Материалы уроков, формулы и конспекты</p>
+                </div>
+            </div>
+
+            <button onclick="loadHandbook()" class="px-3.5 py-2 theme-card border hover:border-indigo-500 rounded-xl text-xs font-bold transition shadow-sm cursor-pointer" title="Обновить список">
+                <i class="fas fa-sync-alt text-indigo-500"></i>
+            </button>
+        </header>
+
+        <!-- ЕДИНЫЙ РЯД ФИЛЬТРОВ ПРЕДМЕТОВ -->
+        <div id="subjectFilter" class="flex flex-wrap gap-2 mb-6"></div>
+
+        <!-- СЕТКА КАРТОЧЕК -->
+        <main id="handbookGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 pb-12">
+            <div class="col-span-full text-center py-20">
+                <i class="fas fa-circle-notch fa-spin text-3xl text-indigo-500 mb-3"></i>
+                <p class="theme-text-muted text-sm font-medium">Загрузка справочников...</p>
+            </div>
+        </main>
+
+        <!-- ЕДИНЫЙ ПОДВАЛ -->
+        <footer class="mt-20 text-center py-6 border-t theme-card" style="background: transparent !important; border-color: var(--card-border) !important;">
+            <p class="text-sm font-medium theme-text-muted">by Maxlic12 & Cloudflare Pages & Cloudflare tunel & Uvicorn & Google Gemini| theBser (v2.0)</p>
+        </footer>
+    </div>
+
+    <!-- АДАПТИВНОЕ МОДАЛЬНОЕ ОКНО КОНСПЕКТА (ЗАЩИТА ОТ ВЫЛЕТА ЗА ЭКРАН) -->
+    <div id="handbookModal" onclick="closeModal()" style="display: none; z-index: 99999 !important;" class="fixed inset-0 modal-blur-backdrop z-50 flex items-start sm:items-center justify-center p-2 sm:p-6 overflow-y-auto">
+        
+        <!-- Карточка: my-auto центрирует на ПК, но никогда не выдавливает шапку на телефоне -->
+        <div onclick="event.stopPropagation()" 
+             class="modal-dialog-zoom theme-card border rounded-2xl sm:rounded-3xl max-w-4xl w-full my-auto flex flex-col relative shadow-2xl overflow-hidden" 
+             style="height: 92vh; max-height: 92vh; min-height: 0; background-color: var(--card-bg, #ffffff);">
+            
+            <!-- 1. Фиксированная шапка (гарантированно видна на телефоне) -->
+            <div class="flex items-start justify-between gap-2 p-3.5 sm:p-6 border-b border-gray-100 dark:border-gray-800 flex-shrink-0" style="background-color: var(--card-bg, #ffffff);">
+                <div class="min-w-0 flex-1">
+                    <div class="flex items-center gap-1.5 sm:gap-2 mb-1 flex-wrap">
+                        <span id="modalSubjectBadge" class="text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-lg bg-indigo-500/10 text-indigo-500 border border-indigo-500/20">Предмет</span>
+                        <span id="modalTopicBadge" class="text-[10px] sm:text-[11px] font-medium px-2 py-0.5 rounded-lg bg-gray-100 dark:bg-gray-800 theme-text-muted truncate max-w-[150px] sm:max-w-[200px]">Раздел</span>
+                        <span id="modalHandbookId" class="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/70 text-indigo-500 border border-indigo-500/20">ID: #0</span>
+                    </div>
+                    <h2 id="modalMainTitle" class="text-sm sm:text-xl font-black leading-snug break-words" style="color: var(--text-main);">Тема конспекта</h2>
+                </div>
+                <button onclick="closeModal()" class="theme-text-muted hover:text-red-500 text-3xl font-light leading-none p-1 cursor-pointer transition select-none flex-shrink-0 ml-1">&times;</button>
+            </div>
+
+            <!-- 2. Скроллящаяся область с touch-поддержкой -->
+            <div id="modalContentWrapper" class="flex-1 overflow-y-auto p-3.5 sm:p-7" style="min-height: 0; -webkit-overflow-scrolling: touch;">
+                <div id="modalContent" class="text-xs sm:text-sm leading-relaxed"></div>
+            </div>
+
+            <!-- 3. Фиксированный подвал -->
+            <div class="p-3 sm:p-5 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between text-xs theme-text-muted flex-shrink-0" style="background-color: var(--card-bg, #ffffff);">
+                <div class="flex items-center gap-2">
+                    <span id="modalMetaDate">Опубликовано: --</span>
+                    <span id="modalFooterId" class="font-mono font-bold text-indigo-400">#0</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="shareCurrentHandbook(this)" class="px-3 py-1.5 sm:px-3.5 sm:py-2 border border-indigo-500/30 text-indigo-500 hover:bg-indigo-500/10 rounded-xl font-bold transition flex items-center gap-1.5 text-xs cursor-pointer">
+                        <i class="fas fa-share-alt"></i>
+                        <span>Поделиться</span>
+                    </button>
+                    <button onclick="closeModal()" class="px-3.5 py-1.5 sm:px-4 sm:py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition text-xs shadow-sm cursor-pointer">Закрыть</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://api.thebservices.online";
+        let allItems = [];
+        let currentActiveSubj = 'all';
+        let activeHandbookId = null;
+
+        // 16 ЭТАЛОННЫХ ПРЕДМЕТОВ СИСТЕМЫ
+        const CANONICAL_SUBJECTS = [
+            "Алгебра", "Геометрия", "Вероятность и статистика", "Русский язык",
+            "Литература", "Физика", "Химия", "Биология",
+            "География", "История", "Информатика", "Английский язык",
+            "ОБЗР", "Технология", "Физкультура", "Музыка"
+        ];
+
+        async function loadHandbook() {
+            const grid = document.getElementById('handbookGrid');
+            if (grid) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-20">
+                        <i class="fas fa-circle-notch fa-spin text-3xl text-indigo-500 mb-3"></i>
+                        <p class="theme-text-muted text-sm font-medium">Загрузка справочников...</p>
+                    </div>
+                `;
+            }
+
+            try {
+                const res = await fetch(`${API_URL}/api/handbook`, { cache: 'no-store' });
+                if (!res.ok) throw new Error();
+                const data = await res.json();
+                
+                // Свежие конспекты всегда первыми в списке
+                allItems = (data || []).sort((a, b) => Number(b.id) - Number(a.id));
+
+                renderSubjectFilters();
+                filterSubject(currentActiveSubj);
+                return allItems;
+            } catch (e) {
+                if (grid) {
+                    grid.innerHTML = `
+                        <div class="col-span-full text-center py-16 theme-card border rounded-3xl p-6 shadow-sm">
+                            <i class="fas fa-exclamation-triangle text-amber-500 text-3xl mb-3"></i>
+                            <h3 class="font-bold text-base mb-1" style="color: var(--text-main) !important;">Не удалось загрузить справочники</h3>
+                            <p class="theme-text-muted text-xs">Проверьте соединение с сервером theBser.</p>
+                        </div>
+                    `;
+                }
+                return [];
+            }
+        }
+
+        function renderSubjectFilters() {
+            const container = document.getElementById('subjectFilter');
+            if (!container) return;
+
+            let html = `
+                <button data-subj="all" onclick="filterSubject('all', this)" class="thebser-tab-btn ${currentActiveSubj === 'all' ? 'active' : 'inactive'}">
+                    <span>Все</span>
+                    <span class="px-1.5 py-0.5 rounded-md font-mono text-[10px] ${currentActiveSubj === 'all' ? 'bg-white/20 text-white' : 'bg-gray-100 dark:bg-gray-800 text-indigo-400'}">${allItems.length}</span>
+                </button>
+            `;
+
+            CANONICAL_SUBJECTS.forEach(subj => {
+                const count = allItems.filter(i => (i.subject || '').toLowerCase() === subj.toLowerCase()).length;
+                const isActive = (currentActiveSubj.toLowerCase() === subj.toLowerCase());
+                const countBadge = count > 0 
+                    ? `<span class="px-1.5 py-0.5 rounded-md font-mono text-[10px] ${isActive ? 'bg-white/20 text-white' : 'bg-indigo-500/10 text-indigo-500 font-bold'}">${count}</span>` 
+                    : '';
+
+                html += `
+                    <button data-subj="${subj}" onclick="filterSubject('${subj}', this)" class="thebser-tab-btn ${isActive ? 'active' : 'inactive'}">
+                        <span>${subj}</span>
+                        ${countBadge}
+                    </button>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function filterSubject(subj, btnElement) {
+            currentActiveSubj = subj;
+
+            const buttons = document.querySelectorAll('#subjectFilter .thebser-tab-btn');
+            buttons.forEach(btn => {
+                const isThisActive = btn.getAttribute('data-subj').toLowerCase() === subj.toLowerCase();
+                btn.className = `thebser-tab-btn ${isThisActive ? 'active' : 'inactive'}`;
+            });
+
+            if (subj === 'all') {
+                renderCards(allItems);
+            } else {
+                renderCards(allItems.filter(i => (i.subject || '').toLowerCase() === subj.toLowerCase()));
+            }
+        }
+
+        function renderCards(list) {
+            const grid = document.getElementById('handbookGrid');
+            if (!grid) return;
+
+            if (!list || list.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-16 theme-card border rounded-3xl p-8 shadow-sm">
+                        <div class="w-16 h-16 rounded-2xl bg-indigo-500 bg-opacity-20 text-indigo-500 flex items-center justify-center mx-auto mb-4 border border-indigo-500/30">
+                            <i class="fas fa-book-open text-2xl"></i>
+                        </div>
+                        <h3 class="font-bold text-base mb-1" style="color: var(--text-main) !important;">Конспектов пока нет</h3>
+                        <p class="theme-text-muted text-xs max-w-sm mx-auto leading-relaxed">
+                            В этом предмете пока не добавлено справочных материалов.
+                        </p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = list.map(item => `
+                <div onclick="openHandbookItem(${item.id})" class="hb-card theme-card border rounded-3xl p-5 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-black uppercase text-indigo-500">${item.subject}</span>
+                            <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-indigo-400">ID: #${item.id}</span>
+                        </div>
+                        <h3 class="font-bold text-base mb-1" style="color: var(--text-main) !important;">${item.title}</h3>
+                        <p class="text-xs theme-text-muted">${item.topic || 'Общий раздел'}</p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-800 text-[11px] theme-text-muted flex justify-between items-center">
+                        <span><i class="far fa-calendar-alt mr-1"></i>${item.created_at ? item.created_at.split(' ')[0] : '--'}</span>
+                        <span class="font-bold text-indigo-500">Открыть конспект →</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function openHandbookItem(id) {
+            const targetId = Number(id);
+            activeHandbookId = targetId;
+            history.replaceState(null, '', `?id=${targetId}`);
+
+            const modal = document.getElementById('handbookModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+
+            const setSafeText = (elemId, text) => {
+                const el = document.getElementById(elemId);
+                if (el) el.textContent = text;
+            };
+
+            // Данные карточки
+            const cached = allItems.find(i => Number(i.id) === targetId);
+            if (cached) {
+                setSafeText('modalSubjectBadge', cached.subject || 'Конспект');
+                setSafeText('modalTopicBadge', cached.topic || 'Общий раздел');
+                setSafeText('modalHandbookId', `ID: #${cached.id}`);
+                setSafeText('modalMainTitle', cached.title || 'Без названия');
+                setSafeText('modalMetaDate', `Опубликовано: ${cached.created_at || '--'}`);
+                setSafeText('modalFooterId', `ID: #${cached.id}`);
+            }
+
+            const contentEl = document.getElementById('modalContent');
+            if (contentEl) {
+                contentEl.innerHTML = `
+                    <div class="text-center py-16">
+                        <i class="fas fa-circle-notch fa-spin text-3xl text-indigo-500 mb-2"></i>
+                        <p class="theme-text-muted text-xs">Загрузка конспекта...</p>
+                    </div>
+                `;
+            }
+
+            try {
+                const res = await fetch(`${API_URL}/api/handbook/${targetId}`, { cache: 'no-store' });
+                if (!res.ok) throw new Error();
+                const data = await res.json();
+
+                setSafeText('modalSubjectBadge', data.subject || 'Конспект');
+                setSafeText('modalTopicBadge', data.topic || 'Общий раздел');
+                setSafeText('modalHandbookId', `ID: #${data.id}`);
+                setSafeText('modalMainTitle', data.title || 'Без названия');
+                setSafeText('modalMetaDate', `Опубликовано: ${data.created_at || '--'}`);
+                setSafeText('modalFooterId', `ID: #${data.id}`);
+
+                if (contentEl) {
+                    contentEl.innerHTML = data.content_html || '<p class="theme-text-muted">Содержимое конспекта отсутствует.</p>';
+                }
+
+                // Гарантированный сброс скролла на самый верх (Шаг 1, заголовок)
+                requestAnimationFrame(() => {
+                    const wrapper = document.getElementById('modalContentWrapper');
+                    if (wrapper) wrapper.scrollTop = 0;
+                    if (modal) modal.scrollTop = 0;
+                });
+            } catch (e) {
+                console.error("Ошибка загрузки:", e);
+                if (contentEl) {
+                    contentEl.innerHTML = `
+                        <div class="text-center py-12">
+                            <i class="fas fa-exclamation-triangle text-amber-500 text-2xl mb-2"></i>
+                            <p class="text-xs text-red-500 font-semibold">Не удалось загрузить содержимое конспекта.</p>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('handbookModal');
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+            activeHandbookId = null;
+            // Очищаем адресную строку при закрытии окна
+            history.replaceState(null, '', window.location.pathname);
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' || e.keyCode === 27) closeModal();
+        });
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadHandbook();
+            const p = new URLSearchParams(window.location.search);
+            const targetId = p.get('id');
+            if (targetId) {
+                openHandbookItem(parseInt(targetId, 10));
+            }
+        });
+
+        async function shareCurrentHandbook(btn) {
+            if (!activeHandbookId) return;
+            const item = allItems.find(i => Number(i.id) === Number(activeHandbookId));
+            const url = `${window.location.origin}${window.location.pathname}?id=${activeHandbookId}`;
+            const title = item ? `Конспект: ${item.title} (${item.subject})` : 'Справочник 8Б';
+
+            if (navigator.share) {
+                try {
+                    await navigator.share({ title, text: title, url });
+                    return;
+                } catch (e) {}
+            }
+
+            navigator.clipboard.writeText(url).then(() => {
+                btn.innerHTML = `<i class="fas fa-check text-emerald-500"></i> <span class="text-emerald-500">Скопировано!</span>`;
+                setTimeout(() => {
+                    btn.innerHTML = `<i class="fas fa-share-alt"></i> <span>Поделиться</span>`;
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>

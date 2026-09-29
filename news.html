@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>theBser — Новости 8Б</title>
+
+
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=111460868', 'ym');
+
+    ym(111460868, 'init', {ssr:true, webvisor:true, clickmap:true, referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/111460868" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+
+
+
+
+    <script>
+        const initialTheme = localStorage.getItem('thebser_theme') || 'light';
+        if (initialTheme === 'dark') {
+            document.documentElement.classList.add('dark-theme');
+        } else {
+            document.documentElement.classList.remove('dark-theme');
+        }
+    </script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="img3/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="img3/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="img3/favicon-16x16.png">
+    <link rel="stylesheet" href="thebser-core.css">
+
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript">
+        (function(m,e,t,r,i,k,a){
+            m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+            m[i].l=1*new Date();
+            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+        })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=104061780', 'ym');
+        ym(104061780, 'init', {ssr:true, clickmap:true, ecommerce:"dataLayer", accurateTrackBounce:true, trackLinks:true});
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/104061780" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+
+    <style>
+        .news-card {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .news-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 30px var(--shadow-color);
+            border-color: var(--primary) !important;
+        }
+
+        .news-input {
+            background-color: var(--input-bg) !important;
+            border-color: var(--card-border) !important;
+            color: var(--text-main) !important;
+        }
+
+        .news-input:focus {
+            outline: none;
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+    </style>
+</head>
+<body class="p-3 sm:p-6 md:p-10">
+
+    <div class="max-w-6xl mx-auto">
+        <!-- ШАПКА РАЗДЕЛА НОВОСТЕЙ -->
+        <header class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-6 mb-6 border-b gap-4" style="border-color: var(--card-border) !important;">
+            <div class="flex items-center gap-3">
+                <a href="index.html" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-2xl theme-card border hover:border-indigo-500 font-semibold text-xs transition shadow-sm">
+                    <i class="fas fa-arrow-left text-indigo-500"></i>
+                    <span>На главную</span>
+                </a>
+                <div class="h-6 w-[1px] bg-gray-300 dark:bg-gray-700 hidden sm:block"></div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-black leading-tight flex items-center gap-2" style="color: var(--text-main) !important;">
+                        <span>Новости класса</span>
+                        <span class="text-xs px-2 py-0.5 rounded-lg bg-indigo-500/20 text-indigo-400 font-bold uppercase tracking-wider">8Б</span>
+                    </h1>
+                    <p class="theme-text-muted text-xs">События, важные объявления и школьная жизнь</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2.5 flex-wrap">
+                <button onclick="refreshNews()" class="px-3.5 py-2 theme-card border hover:border-indigo-500 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-sm">
+                    <i class="fas fa-sync-alt text-indigo-500" id="refreshIcon"></i>
+                    <span>Обновить</span>
+                </button>
+                <a id="suggestNewsBtn" href="https://t.me/thebser_suggest_bot?start=suggest_news" target="_blank" class="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-md">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Предложить новость</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- ПАНЕЛЬ ПОИСКА И ТЕГОВ -->
+        <div class="theme-card border rounded-3xl p-4 sm:p-6 shadow-sm mb-6">
+            <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
+                <!-- Динамическая панель тегов -->
+                <div id="newsTagsContainer" class="flex flex-wrap gap-2"></div>
+
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-1.5 w-full sm:w-auto">
+                        <div class="relative flex-1 sm:w-36">
+                            <input type="number" id="searchNewsIdInput" placeholder="Поиск #ID..." onkeydown="if(event.key==='Enter') searchNewsById()" class="news-input border px-3 py-1.5 rounded-xl text-xs font-mono font-semibold w-full">
+                        </div>
+                        <button onclick="searchNewsById()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-sm">
+                            <i class="fas fa-search text-[10px]"></i>
+                            <span>Найти</span>
+                        </button>
+                    </div>
+
+                    <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl border border-gray-200 dark:border-gray-800 text-xs font-medium theme-text-muted">
+                        <i class="fas fa-newspaper text-indigo-500"></i>
+                        <span id="newsCountLabel">Новостей: 0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- СЕТКА КАРТОЧЕК НОВОСТЕЙ -->
+        <main id="newsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 pb-12">
+            <div class="col-span-full text-center py-20">
+                <i class="fas fa-circle-notch fa-spin text-3xl text-indigo-500 mb-3"></i>
+                <p class="theme-text-muted text-sm font-medium">Загрузка новостей...</p>
+            </div>
+        </main>
+
+        <!-- ЕДИНЫЙ ПОДВАЛ ПОРТАЛА -->
+        <footer class="mt-20 text-center py-6 border-t theme-card" style="background: transparent !important; border-color: var(--card-border) !important;">
+            <p class="text-sm font-medium theme-text-muted">by Maxlic12 & Cloudflare Pages & Cloudflare tunel & Uvicorn & Google Gemini| theBser (v2.0)</p>
+        </footer>
+    </div>
+
+    <!-- 1. ПОЛНОРАЗМЕРНОЕ МОДАЛЬНОЕ ОКНО НОВОСТИ -->
+    <div id="newsModal" onclick="closeNewsModal()" style="display: none;" class="fixed inset-0 modal-blur-backdrop z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+        <div onclick="event.stopPropagation()" class="modal-dialog-zoom theme-card border rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl p-5 sm:p-7 relative flex flex-col justify-between">
+            <div>
+                <div id="modalNewsTagBar" class="h-2 -mx-5 -mt-5 sm:-mx-7 sm:-mt-7 mb-5 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-t-3xl"></div>
+
+                <div class="flex items-start justify-between gap-3 mb-3">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span id="modalNewsTag" class="text-xs font-black uppercase tracking-wider px-2.5 py-0.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/70 text-indigo-500 border border-indigo-200 dark:border-indigo-800">
+                            #новость
+                        </span>
+                        <span id="modalNewsDate" class="text-xs theme-text-muted font-medium flex items-center gap-1">
+                            <i class="far fa-calendar-alt text-[10px]"></i> --
+                        </span>
+                    </div>
+                    <button onclick="closeNewsModal()" class="theme-text-muted hover:text-red-500 text-3xl font-light leading-none p-1 cursor-pointer transition select-none">&times;</button>
+                </div>
+
+                <h2 id="modalNewsTitle" class="text-xl sm:text-2xl font-black mb-4 leading-snug">Заголовок новости</h2>
+
+                <div class="theme-card border p-4 sm:p-5 rounded-2xl mb-5">
+                    <p id="modalNewsText" class="text-sm font-medium leading-relaxed whitespace-pre-wrap break-words"></p>
+                </div>
+
+                <div id="modalNewsMediaSection" class="hidden mb-5">
+                    <h4 class="text-xs font-bold uppercase tracking-wider theme-text-muted mb-3 flex items-center gap-1.5">
+                        <i class="fas fa-paperclip text-indigo-500"></i>
+                        <span>Прикреплённые материалы:</span>
+                    </h4>
+                    <div id="modalNewsMediaContainer" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
+                </div>
+
+                <div id="modalNewsLinksSection" class="hidden mb-5">
+                    <h4 class="text-xs font-bold uppercase tracking-wider theme-text-muted mb-3 flex items-center gap-1.5">
+                        <i class="fas fa-link text-indigo-500"></i>
+                        <span>Ссылки:</span>
+                    </h4>
+                    <div id="modalNewsLinksContainer" class="flex flex-col gap-2"></div>
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between text-xs theme-text-muted">
+                <div class="flex items-center gap-2">
+                    <button id="modalComplaintBtn" onclick="openComplaintModalFromNews()" class="px-3 py-1.5 rounded-xl border border-red-500/30 text-red-500 hover:bg-red-500/10 font-bold transition flex items-center gap-1.5">
+                        <i class="fas fa-flag text-[11px]"></i>
+                        <span>Пожаловаться</span>
+                    </button>
+                    <button type="button" onclick="shareCurrentNews(this)" class="px-3 py-1.5 rounded-xl border border-indigo-500/30 text-indigo-500 hover:bg-indigo-500/10 font-bold transition flex items-center gap-1.5">
+                        <i class="fas fa-share-alt"></i>
+                        <span>Поделиться</span>
+                    </button>
+                </div>
+                <span id="modalNewsId" class="font-mono font-bold px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-indigo-500">ID: #0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. МОДАЛЬНОЕ ОКНО «ПОЖАЛОВАТЬСЯ НА НОВОСТЬ» -->
+    <div id="complaintModal" onclick="closeComplaintModal()" style="display: none;" class="fixed inset-0 modal-blur-backdrop z-50 flex items-center justify-center p-4 overflow-y-auto">
+        <div class="modal-dialog-zoom theme-card border rounded-3xl max-w-md w-full p-6 shadow-2xl text-center relative" onclick="event.stopPropagation()">
+            <div class="w-16 h-16 rounded-2xl bg-red-500/20 text-red-500 flex items-center justify-center text-3xl mx-auto mb-4 border border-red-500/30">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            
+            <h3 class="text-lg font-bold mb-1">Жалоба на публикацию</h3>
+            <p class="theme-text-muted text-xs leading-relaxed mb-4">
+                Жалобы рассматриваются администрацией через бота модерации theBser.
+            </p>
+
+            <div class="p-3.5 rounded-2xl border text-left mb-5 space-y-1.5" style="background-color: var(--input-bg);">
+                <div class="text-[11px] theme-text-muted">Номер публикации: <b id="complaintTargetIdLabel" class="font-mono text-indigo-500 font-bold">#0</b></div>
+                <div class="text-[11px] theme-text-muted leading-relaxed">
+                    Нажмите «Открыть бота» для отправки жалобы модераторам.
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <button onclick="closeComplaintModal()" class="flex-1 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 text-xs font-bold transition">Отмена</button>
+                <a id="complaintBotLink" href="https://t.me/thebser_complaints_bot" target="_blank" onclick="closeComplaintModal()" class="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition shadow-md">
+                    <i class="fab fa-telegram-plane"></i>
+                    <span>Открыть бота</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. LIGHTBOX ДЛЯ ФОТОГРАФИЙ -->
+    <div id="photoViewerModal" style="display: none;" class="fixed inset-0 modal-blur-backdrop z-50 flex flex-col items-center justify-between p-4">
+        <div class="w-full flex items-center justify-between max-w-5xl z-20 py-2">
+            <span id="viewerCounter" class="text-xs font-mono font-bold text-white bg-white/10 px-3 py-1.5 rounded-xl">1 из 1</span>
+            <div class="flex items-center gap-3">
+                <button onclick="downloadActivePhoto(event)" class="px-3.5 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold flex items-center gap-1.5 transition">
+                    <i class="fas fa-download text-xs"></i>
+                    <span>Скачать фото</span>
+                </button>
+                <button onclick="closePhotoViewer()" class="text-white hover:text-red-400 text-3xl font-light leading-none p-1">&times;</button>
+            </div>
+        </div>
+
+        <div id="viewerImgWrapper" class="relative w-full max-w-5xl flex-1 flex items-center justify-center overflow-hidden my-auto cursor-pointer">
+            <button id="viewerPrevBtn" onclick="event.stopPropagation(); navigatePhoto(-1)" class="absolute left-2 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center text-lg z-30 transition border border-white/20">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <img id="viewerImage" src="" alt="Просмотр фото" class="max-h-[82vh] max-w-full object-contain rounded-2xl shadow-2xl transition duration-200 cursor-default" onclick="event.stopPropagation()">
+            <button id="viewerNextBtn" onclick="event.stopPropagation(); navigatePhoto(1)" class="absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center text-lg z-30 transition border border-white/20">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+        <div class="text-[11px] text-gray-400 py-2 pointer-events-none">Нажмите Escape или кликните по фону для выхода</div>
+    </div>
+
+    <!-- 4. ОКНО СКАЧИВАНИЯ НЕ-ФОТО ФАЙЛОВ -->
+    <div id="fileDownloadModal" style="display: none;" class="fixed inset-0 modal-blur-backdrop z-50 flex items-center justify-center p-4">
+        <div class="modal-dialog-zoom theme-card border rounded-3xl max-w-md w-full p-6 shadow-2xl text-center" onclick="event.stopPropagation()">
+            <div class="w-16 h-16 rounded-2xl bg-indigo-500/20 text-indigo-500 flex items-center justify-center text-3xl mx-auto mb-4">
+                <i class="fas fa-file-download" id="fileDialogIcon"></i>
+            </div>
+            <h3 class="text-lg font-bold mb-1">Этот файл нельзя тут просмотреть</h3>
+            <p class="theme-text-muted text-xs leading-relaxed mb-4">
+                Но вы можете сохранить его на своё устройство.
+            </p>
+            <div class="p-3 rounded-2xl border mb-5 font-mono text-xs truncate" style="background-color: var(--input-bg);" id="fileDialogName">
+                file.docx
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="closeFileDialog()" class="flex-1 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 text-xs font-bold transition">Отмена</button>
+                <button id="fileDialogDownloadBtn" onclick="downloadCurrentDialogFile()" class="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition shadow-md">
+                    <i class="fas fa-download text-xs"></i>
+                    <span>Скачать</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://api.thebservices.online";
+        const COMPLAINTS_BOT_URL = "https://t.me/thebser_complaints_bot?start=report_news_";
+
+        let allNewsList = [];
+        let currentTag = 'all';
+        let currentModalNewsId = null;
+
+        let currentGalleryPhotos = [];
+        let currentPhotoIndex = 0;
+        let currentFileDownloadRelativePath = "";
+        let currentFileDownloadName = "";
+
+        const DEFAULT_TAGS = ["объявление", "мероприятие", "учёба", "поездка", "праздник"];
+
+        function triggerServerDownload(relativePath, filename) {
+            const url = `${API_URL}/api/download?file_path=${encodeURIComponent(relativePath)}`;
+            const a = document.createElement('a');
+            a.href = url;
+            a.setAttribute('download', filename || relativePath.split('/').pop() || 'download');
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        async function loadNews() {
+            try {
+                const res = await fetch(`${API_URL}/api/news`, { cache: 'no-store' });
+                allNewsList = await res.json();
+                renderTagsBar();
+                filterNewsByTag(currentTag);
+            } catch (e) {
+                console.error("Ошибка загрузки новостей:", e);
+            }
+        }
+
+        function renderTagsBar() {
+            const container = document.getElementById('newsTagsContainer');
+            if (!container) return;
+
+            const dbTags = allNewsList.map(n => (n.tag || '').replace('#', '').trim().toLowerCase()).filter(Boolean);
+            const uniqueTags = Array.from(new Set([...DEFAULT_TAGS, ...dbTags]));
+
+            let html = `
+                <button onclick="filterNewsByTag('all', this)" class="thebser-tab-btn ${currentTag === 'all' ? 'active' : 'inactive'}">
+                    <span>Все</span>
+                    <span class="px-1.5 py-0.5 rounded-md font-mono text-[10px] ${currentTag === 'all' ? 'bg-white/20 text-white' : 'bg-gray-100 dark:bg-gray-800 text-indigo-400'}">${allNewsList.length}</span>
+                </button>
+            `;
+
+            uniqueTags.forEach(tag => {
+                const count = allNewsList.filter(n => (n.tag || '').replace('#', '').trim().toLowerCase() === tag.toLowerCase()).length;
+                const isActive = (currentTag.toLowerCase() === tag.toLowerCase());
+                const countBadge = count > 0 
+                    ? `<span class="px-1.5 py-0.5 rounded-md font-mono text-[10px] ${isActive ? 'bg-white/20 text-white' : 'bg-indigo-500/10 text-indigo-500 font-bold'}">${count}</span>` 
+                    : '';
+
+                html += `
+                    <button onclick="filterNewsByTag('${tag}', this)" class="thebser-tab-btn ${isActive ? 'active' : 'inactive'}">
+                        <span>#${tag}</span>
+                        ${countBadge}
+                    </button>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function filterNewsByTag(tag, btnElement) {
+            currentTag = tag;
+
+            const buttons = document.querySelectorAll('.thebser-tab-btn');
+            buttons.forEach(btn => {
+                btn.className = "thebser-tab-btn inactive";
+            });
+
+            if (btnElement) {
+                btnElement.className = "thebser-tab-btn active";
+            }
+
+            if (tag === 'all') {
+                renderNewsCards(allNewsList);
+            } else {
+                const filtered = allNewsList.filter(n => (n.tag || '').replace('#', '').trim().toLowerCase() === tag.toLowerCase());
+                renderNewsCards(filtered);
+            }
+        }
+
+        function renderNewsCards(list) {
+            const container = document.getElementById('newsContainer');
+            const countLabel = document.getElementById('newsCountLabel');
+            if (countLabel) countLabel.textContent = `Новостей: ${list.length}`;
+
+            if (!list || list.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-16 theme-card border rounded-3xl p-8 shadow-sm">
+                        <div class="w-16 h-16 rounded-2xl bg-indigo-500/20 text-indigo-500 flex items-center justify-center mx-auto mb-4 border border-indigo-500/30">
+                            <i class="fas fa-newspaper text-2xl"></i>
+                        </div>
+                        <h3 class="font-bold text-base mb-1" style="color: var(--text-main) !important;">Новостей не найдено</h3>
+                        <p class="theme-text-muted text-xs max-w-sm mx-auto leading-relaxed">
+                            Опубликованных записей в этой категории пока нет.
+                        </p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = list.map(item => {
+                const hasMedia = item.media_files && item.media_files.length > 0;
+                const hasLinks = item.links && item.links.length > 0;
+
+                return `
+                    <div onclick="openNewsModal(${item.id})" class="news-card theme-card border rounded-3xl p-5 shadow-xs flex flex-col justify-between relative overflow-hidden">
+                        <div>
+                            <div class="h-1.5 -mx-5 -mt-5 mb-4 bg-gradient-to-r from-indigo-500 to-purple-600"></div>
+
+                            <div class="flex items-start justify-between gap-2 mb-2">
+                                <span class="text-xs font-black uppercase tracking-wider px-2 py-0.5 rounded-lg border border-indigo-500/25 bg-indigo-500/10 text-indigo-500 truncate">
+                                    #${item.tag || 'новость'}
+                                </span>
+                                <span class="text-[11px] font-bold px-2 py-0.5 rounded-xl bg-gray-100 dark:bg-gray-800 theme-text-muted flex-shrink-0">
+                                    ${item.date || item.created_at || '--'}
+                                </span>
+                            </div>
+
+                            <h3 class="font-bold text-base leading-snug mb-2" style="color: var(--text-main);">${item.title}</h3>
+                            <p class="text-xs theme-text-muted leading-relaxed line-clamp-3 mb-4 whitespace-pre-wrap">${item.text}</p>
+                        </div>
+
+                        <div class="pt-3 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                            <div class="flex items-center gap-2 text-xs theme-text-muted">
+                                ${hasMedia ? `<span class="text-[11px] font-medium flex items-center gap-1"><i class="fas fa-paperclip text-indigo-400"></i> ${item.media_files.length}</span>` : ''}
+                                ${hasLinks ? `<span class="text-[11px] font-medium flex items-center gap-1"><i class="fas fa-link text-indigo-400"></i> ${item.links.length}</span>` : ''}
+                            </div>
+
+                            <div class="flex items-center gap-2">
+                                <button onclick="openComplaintModal(event, ${item.id})" class="p-1 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-500/10 transition" title="Пожаловаться">
+                                    <i class="fas fa-flag text-[11px]"></i>
+                                </button>
+                                <span class="font-mono text-[11px] font-bold px-2 py-0.5 rounded-lg bg-gray-100 dark:bg-gray-800 text-indigo-400 border border-gray-200 dark:border-gray-700/60 shadow-xs">
+                                    ID: #${item.id}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function refreshNews() {
+            const icon = document.getElementById('refreshIcon');
+            if (icon) icon.classList.add('fa-spin');
+            loadNews();
+            setTimeout(() => {
+                if (icon) icon.classList.remove('fa-spin');
+            }, 600);
+        }
+
+        async function searchNewsById(customId = null) {
+            const input = document.getElementById('searchNewsIdInput');
+            const targetId = customId || (input ? parseInt(input.value, 10) : null);
+
+            if (!targetId || isNaN(targetId)) return;
+
+            let item = allNewsList.find(n => n.id === targetId);
+
+            if (!item) {
+                try {
+                    const res = await fetch(`${API_URL}/api/news/${targetId}`, { cache: 'no-store' });
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data && !data.error) {
+                            item = data;
+                            allNewsList.unshift(item);
+                            renderNewsCards(allNewsList);
+                        }
+                    }
+                } catch (e) {}
+            }
+
+            if (item) {
+                openNewsModal(item.id);
+            } else {
+                alert(`Новость с ID #${targetId} не найдена.`);
+            }
+        }
+
+        function openNewsModal(newsId) {
+            const item = allNewsList.find(n => n.id === newsId);
+            if (!item) return;
+
+            currentModalNewsId = item.id;
+            const modal = document.getElementById('newsModal');
+
+            document.getElementById('modalNewsTag').textContent = `#${item.tag || 'новость'}`;
+            document.getElementById('modalNewsDate').innerHTML = `<i class="far fa-calendar-alt text-[10px]"></i> ${item.date || item.created_at || '--'}`;
+            document.getElementById('modalNewsTitle').textContent = item.title;
+            document.getElementById('modalNewsText').textContent = item.text;
+            document.getElementById('modalNewsId').textContent = `ID: #${item.id}`;
+            history.replaceState(null, '', `?id=${newsId}`);
+
+            const mediaSec = document.getElementById('modalNewsMediaSection');
+            const mediaCont = document.getElementById('modalNewsMediaContainer');
+
+            if (item.media_files && item.media_files.length > 0) {
+                mediaSec.classList.remove('hidden');
+                const imageFiles = item.media_files.filter(f => f.match(/\.(jpg|jpeg|png|webp)$/i));
+                currentGalleryPhotos = imageFiles;
+
+                mediaCont.innerHTML = item.media_files.map(filePath => {
+                    const fullUrl = filePath.startsWith('http') ? filePath : `${API_URL}${filePath}`;
+                    const isImg = filePath.match(/\.(jpg|jpeg|png|webp)$/i);
+                    const fileName = filePath.split('/').pop();
+
+                    if (isImg) {
+                        const imgIdx = imageFiles.indexOf(filePath);
+                        return `
+                            <div onclick="openPhotoViewer(${imgIdx})" class="block rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800 hover:opacity-90 transition cursor-pointer relative group">
+                                <img src="${fullUrl}" class="w-full h-24 object-cover" alt="Медиа">
+                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition text-xs font-bold">
+                                    <i class="fas fa-search-plus mr-1"></i> Просмотр
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        const isAudio = filePath.match(/\.(mp3|wav|ogg|m4a)$/i);
+                        const iconClass = isAudio ? 'fa-music text-purple-500' : 'fa-file-alt text-indigo-500';
+                        return `
+                            <div onclick="openFileDialog('${filePath}', '${fileName}', '${iconClass}')" class="flex items-center gap-2 p-3 rounded-xl border border-gray-200 dark:border-gray-800 theme-card text-xs font-semibold hover:border-indigo-500 transition truncate cursor-pointer">
+                                <i class="fas ${iconClass} text-lg flex-shrink-0"></i>
+                                <span class="truncate flex-1">${fileName}</span>
+                            </div>
+                        `;
+                    }
+                }).join('');
+            } else {
+                mediaSec.classList.add('hidden');
+            }
+
+            const linksSec = document.getElementById('modalNewsLinksSection');
+            const linksCont = document.getElementById('modalNewsLinksContainer');
+            if (item.links && item.links.length > 0) {
+                linksSec.classList.remove('hidden');
+                linksCont.innerHTML = item.links.map(l => `
+                    <a href="${l.url}" target="_blank" class="flex items-center justify-between p-3 rounded-xl border border-gray-200 dark:border-gray-800 theme-card text-xs font-semibold hover:border-indigo-500 transition group">
+                        <span class="flex items-center gap-2 truncate">
+                            <i class="fas fa-external-link-alt text-indigo-500 text-[11px]"></i>
+                            <span class="group-hover:text-indigo-500 transition truncate">${l.title}</span>
+                        </span>
+                        <span class="text-[10px] theme-text-muted truncate ml-2 font-mono">${l.url.replace(/^https?:\/\//, '')}</span>
+                    </a>
+                `).join('');
+            } else {
+                linksSec.classList.add('hidden');
+            }
+
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeNewsModal() {
+            const modal = document.getElementById('newsModal');
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+                history.replaceState(null, '', window.location.pathname);
+            }
+        }
+
+        function openComplaintModal(event, newsId) {
+            if (event) event.stopPropagation();
+            currentModalNewsId = newsId;
+
+            document.getElementById('complaintTargetIdLabel').textContent = `#${newsId}`;
+            document.getElementById('complaintBotLink').href = `${COMPLAINTS_BOT_URL}${newsId}`;
+
+            const modal = document.getElementById('complaintModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function openComplaintModalFromNews() {
+            if (currentModalNewsId) openComplaintModal(null, currentModalNewsId);
+        }
+
+        function closeComplaintModal() {
+            const modal = document.getElementById('complaintModal');
+            if (modal) {
+                modal.style.display = 'none';
+                if (!document.getElementById('newsModal') || document.getElementById('newsModal').style.display === 'none') {
+                    document.body.style.overflow = '';
+                }
+            }
+        }
+
+        function openPhotoViewer(imgIndex) {
+            if (!currentGalleryPhotos || currentGalleryPhotos.length === 0) return;
+            currentPhotoIndex = imgIndex >= 0 ? imgIndex : 0;
+            updatePhotoViewer();
+            const modal = document.getElementById('photoViewerModal');
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function updatePhotoViewer() {
+            if (currentGalleryPhotos.length === 0) return;
+            const filePath = currentGalleryPhotos[currentPhotoIndex];
+            const fullUrl = filePath.startsWith('http') ? filePath : `${API_URL}${filePath}`;
+
+            document.getElementById('viewerImage').src = fullUrl;
+            document.getElementById('viewerCounter').textContent = `${currentPhotoIndex + 1} из ${currentGalleryPhotos.length}`;
+
+            const prevBtn = document.getElementById('viewerPrevBtn');
+            const nextBtn = document.getElementById('viewerNextBtn');
+
+            if (currentGalleryPhotos.length <= 1) {
+                prevBtn.classList.add('hidden');
+                nextBtn.classList.add('hidden');
+            } else {
+                prevBtn.classList.remove('hidden');
+                nextBtn.classList.remove('hidden');
+                prevBtn.disabled = (currentPhotoIndex === 0);
+                nextBtn.disabled = (currentPhotoIndex === currentGalleryPhotos.length - 1);
+            }
+        }
+
+        function navigatePhoto(delta) {
+            const next = currentPhotoIndex + delta;
+            if (next >= 0 && next < currentGalleryPhotos.length) {
+                currentPhotoIndex = next;
+                updatePhotoViewer();
+            }
+        }
+
+        function downloadActivePhoto(event) {
+            if (event) event.stopPropagation();
+            if (currentGalleryPhotos.length === 0) return;
+            const relPath = currentGalleryPhotos[currentPhotoIndex];
+            const fname = relPath.split('/').pop() || 'photo.jpg';
+            triggerServerDownload(relPath, fname);
+        }
+
+        function closePhotoViewer() {
+            const modal = document.getElementById('photoViewerModal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function openFileDialog(relPath, fileName, iconClass) {
+            currentFileDownloadRelativePath = relPath;
+            currentFileDownloadName = fileName;
+
+            document.getElementById('fileDialogName').textContent = fileName;
+            document.getElementById('fileDialogIcon').className = `fas ${iconClass}`;
+            document.getElementById('fileDownloadModal').style.display = 'flex';
+        }
+
+        function closeFileDialog() {
+            const modal = document.getElementById('fileDownloadModal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function downloadCurrentDialogFile() {
+            if (currentFileDownloadRelativePath) {
+                triggerServerDownload(currentFileDownloadRelativePath, currentFileDownloadName);
+                closeFileDialog();
+            }
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' || e.key === 'Esc' || e.keyCode === 27) {
+                closePhotoViewer();
+                closeFileDialog();
+                closeComplaintModal();
+                closeNewsModal();
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const targetId = urlParams.get('id');
+
+            await loadNews();
+            if (targetId) {
+                searchNewsById(parseInt(targetId, 10));
+            }
+        });
+
+        async function shareCurrentNews(btn) {
+            if (!currentModalNewsId) return;
+            const item = allNewsList.find(n => n.id === currentModalNewsId);
+            const url = `${window.location.origin}${window.location.pathname}?id=${currentModalNewsId}`;
+            const title = item ? item.title : 'Новость 8Б';
+
+            if (navigator.share) {
+                try {
+                    await navigator.share({ title, text: title, url });
+                    return;
+                } catch (e) {}
+            }
+
+            navigator.clipboard.writeText(url).then(() => {
+                btn.innerHTML = `<i class="fas fa-check text-emerald-500"></i> <span class="text-emerald-500">Скопировано!</span>`;
+                setTimeout(() => {
+                    btn.innerHTML = `<i class="fas fa-share-alt"></i> <span>Поделиться</span>`;
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>

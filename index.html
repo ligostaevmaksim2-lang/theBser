@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>theBser — Главная страница</title>
+    
+
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=111460868', 'ym');
+
+    ym(111460868, 'init', {ssr:true, webvisor:true, clickmap:true, referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/111460868" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+
+
+
+
+    <!-- Моментальное применение темы до отрисовки DOM -->
+    <script>
+        const initialTheme = localStorage.getItem('thebser_theme') || 'light';
+        if (initialTheme === 'dark') {
+            document.documentElement.classList.add('dark-theme');
+        } else {
+            document.documentElement.classList.remove('dark-theme');
+        }
+    </script>
+
+    <!-- Внешние библиотеки (CDN) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="thebser-core.css">
+
+    <style>
+        /* ===== ПРЕЛОАДЕР СИНХРОНИЗАЦИИ ===== */
+        #preloader {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            z-index: 9990;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.45s ease, visibility 0.45s ease;
+        }
+
+        #preloader.active {
+            display: flex;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #preloader.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .gear-spin {
+            transform-origin: center;
+            animation: spin 4s linear infinite;
+        }
+
+        .gear-spin-reverse {
+            transform-origin: center;
+            animation: spin-reverse 3s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes spin-reverse {
+            from { transform: rotate(360deg); }
+            to { transform: rotate(0deg); }
+        }
+
+        .pulse-data {
+            animation: pulseGlow 1.8s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% { opacity: 0.3; filter: drop-shadow(0 0 2px #6366f1); }
+            100% { opacity: 1; filter: drop-shadow(0 0 12px #818cf8); }
+        }
+
+        /* ===== ПЕРЕХОД МЕЖДУ СТРАНИЦАМИ ===== */
+        #pageTransition {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            z-index: 9980;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #pageTransition.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        /* ===== КАРТОЧКИ РАЗДЕЛОВ ===== */
+        .card-news {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.25);
+        }
+        .card-hw {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+            box-shadow: 0 10px 25px rgba(245, 158, 11, 0.25);
+        }
+        .card-schedule {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.25);
+        }
+        .card-materials {
+            background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%) !important;
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.25);
+        }
+        .card-tests {
+            background: linear-gradient(135deg, #06b6d4 0%, #0284c7 100%) !important;
+            box-shadow: 0 10px 25px rgba(6, 182, 212, 0.25);
+        }
+        .card-photos {
+            background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%) !important;
+            box-shadow: 0 10px 25px rgba(168, 85, 247, 0.25);
+        }
+        .card-dates {
+            background: linear-gradient(135deg, #10b981 0%, #047857 100%) !important;
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.25);
+        }
+
+        .portal-card {
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            border-radius: 1.5rem;
+            cursor: pointer;
+            color: #ffffff !important;
+        }
+
+        .portal-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 65%);
+            transform: rotate(30deg);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+
+        .portal-card:hover {
+            transform: translateY(-6px) scale(1.015);
+            box-shadow: 0 20px 35px var(--shadow-color);
+        }
+
+        .portal-card:hover::before {
+            opacity: 1;
+        }
+
+        .portal-card:active {
+            transform: translateY(-2px) scale(0.99);
+        }
+
+        /* ===== КНОПКИ ВНЕШНИХ СЕРВИСОВ ===== */
+        .service-btn {
+            background-color: var(--card-bg) !important;
+            border: 1px solid var(--card-border) !important;
+            color: var(--text-main) !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .service-btn:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary) !important;
+            box-shadow: 0 12px 25px var(--shadow-color);
+        }
+
+        .service-btn i {
+            transition: transform 0.3s ease;
+        }
+
+        .service-btn:hover i {
+            transform: scale(1.15) rotate(6deg);
+        }
+
+        /* ===== ТИТУЛЬНЫЙ ЗАГОЛОВОК ===== */
+        .hero-title {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #db2777 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 6s ease infinite;
+            display: inline-block;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .hero-title:hover {
+            transform: scale(1.02);
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* ===== МОБИЛЬНЫЙ РЕЖИМ РАСПИСАНИЯ ===== */
+        @media (max-width: 767px) {
+            .day-card-item {
+                display: none !important;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+            .day-card-item.active-mobile-day {
+                display: flex !important;
+                width: 100% !important;
+                animation: slideDayFade 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            .mobile-weekend-wrapper {
+                border-top: none !important;
+                margin-top: 0 !important;
+                padding-top: 0 !important;
+            }
+            .mobile-weekend-title {
+                display: none !important;
+            }
+        }
+
+        @keyframes slideDayFade {
+            from {
+                opacity: 0;
+                transform: translateY(8px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        #hwPopover {
+            background-color: var(--card-bg) !important;
+            border-color: var(--primary) !important;
+            color: var(--text-main) !important;
+        }
+
+        .badge-dz-orange {
+            background: linear-gradient(135deg, #ff8800 0%, #ff3b00 100%) !important;
+            color: #ffffff !important;
+            border: 1px solid #ffaa40 !important;
+            box-shadow: 0 0 10px rgba(255, 100, 0, 0.7);
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        #welcomeOnboardingModal {
+    z-index: 99999 !important;
+}
+
+#preloader {
+    z-index: 99990 !important;
+}
+
+#pageTransition {
+    z-index: 99980 !important;
+}
+
+/* Живая анимированная плашка под заголовком */
+        .hero-divider {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #db2777 100%);
+            background-size: 200% auto;
+            animation: gradientShift 6s ease infinite, barPulseGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes barPulseGlow {
+            0% {
+                transform: scaleX(0.92);
+                opacity: 0.85;
+                filter: drop-shadow(0 0 4px rgba(99, 102, 241, 0.4));
+            }
+            100% {
+                transform: scaleX(1.08);
+                opacity: 1;
+                filter: drop-shadow(0 0 10px rgba(219, 39, 119, 0.7));
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. МОДАЛЬНОЕ ОКНО ПРИВЕТСТВИЯ (ONBOARDING) -->
+    <div id="welcomeOnboardingModal" style="display: none; z-index: 99999;" class="fixed inset-0 modal-blur-backdrop flex items-center justify-center p-4 overflow-y-auto">
+        <div class="modal-dialog-zoom theme-card border rounded-3xl max-w-lg w-full shadow-2xl p-6 md:p-8 relative text-center">
+            <div class="w-20 h-20 rounded-3xl bg-indigo-500/20 text-indigo-500 flex items-center justify-center text-4xl mx-auto mb-5 shadow-inner">
+                <i class="fas fa-hand-sparkles"></i>
+            </div>
+            
+            <h2 class="text-2xl md:text-3xl font-extrabold mb-2">Добро пожаловать в 8Б!</h2>
+            <p class="theme-text-muted text-sm leading-relaxed mb-6">
+                Мы рады видеть вас на портале <b>theBser</b>. Здесь публикуются актуальные домашние задания, расписание звонков, новости класса и справочные материалы.
+            </p>
+
+            <div class="theme-card border p-4 rounded-2xl text-left mb-6 space-y-3" style="background-color: var(--card-border) !important;">
+                <label class="flex items-start gap-3 cursor-pointer select-none">
+    <input type="checkbox" id="termsConsentCheckbox" onchange="toggleConsentButton()" class="mt-1 w-5 h-5 rounded text-indigo-600 focus:ring-indigo-500 border-gray-300 cursor-pointer">
+    <span class="text-xs leading-relaxed" style="color: var(--text-main);">
+        Я принимаю условия <a href="terms.html" target="_blank" class="text-indigo-500 hover:text-indigo-600 underline font-semibold">Пользовательского соглашения</a>, подтверждаю согласие на использование сессионных файлов Cookie, локального хранилища и сбор обезличенных данных сервисом <b>Яндекс Метрика</b> для формирования статистики посещаемости сайта.
+    </span>
+</label>
+            </div>
+
+            <button type="button" id="enterSiteBtn" onclick="acceptWelcomeTerms()" disabled class="w-full py-3.5 px-6 rounded-2xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold shadow-lg transition duration-200 flex items-center justify-center gap-2">
+                <span>Принять и войти на сайт</span>
+                <i class="fas fa-arrow-right text-sm"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 2. АДАПТИВНЫЙ ПРЕЛОАДЕР (СИНХРОНИЗАЦИЯ) -->
+    <div id="preloader">
+        <div class="relative w-28 h-28 flex items-center justify-center mb-4">
+            <svg class="w-full h-full text-indigo-500" viewBox="0 0 100 100" fill="none">
+                <path d="M25 65C16.7 65 10 58.3 10 50C10 42.4 15.6 36.1 23 35.2C24.8 24.5 34 16.5 45 16.5C54.2 16.5 62.2 22.1 65.5 30.2C67.3 29.4 69.3 29 71.5 29C79.5 29 86 35.5 86 43.5C86 44.8 85.8 46.1 85.5 47.3C90.5 49.6 94 54.6 94 60.5C94 68.5 87.5 75 79.5 75L25 75" stroke="#4f46e5" stroke-width="3" stroke-dasharray="6 4" class="pulse-data" />
+                <g class="gear-spin" style="transform-origin: 45px 50px;">
+                    <circle cx="45" cy="50" r="14" stroke="#6366f1" stroke-width="3" fill="var(--card-bg)" />
+                    <path d="M45 32V36 M45 64V68 M27 50H31 M59 50H63 M32 37L35 40 M55 60L58 63 M32 63L35 60 M55 40L58 37" stroke="#6366f1" stroke-width="4" stroke-linecap="round" />
+                    <circle cx="45" cy="50" r="4" fill="#818cf8" />
+                </g>
+                <g class="gear-spin-reverse" style="transform-origin: 66px 58px;">
+                    <circle cx="66" cy="58" r="9" stroke="#ec4899" stroke-width="2.5" fill="var(--card-bg)" />
+                    <path d="M66 46V49 M66 67V70 M54 58H57 M75 58H78" stroke="#ec4899" stroke-width="3" stroke-linecap="round" />
+                    <circle cx="66" cy="58" r="2.5" fill="#f472b6" />
+                </g>
+            </svg>
+        </div>
+        <div class="text-xl font-bold tracking-wide flex items-center gap-2">
+            theBser <span class="text-indigo-600 dark:text-indigo-400 font-mono text-sm px-2 py-0.5 bg-indigo-100 dark:bg-indigo-950 rounded">8Б</span>
+        </div>
+        <div class="theme-text-muted text-sm mt-2 flex items-center gap-2">
+            <i class="fas fa-circle-notch fa-spin text-indigo-500"></i>
+            <span>Синхронизация с сервером...</span>
+        </div>
+    </div>
+
+    <!-- 3. ЭКРАН ПЕРЕХОДА МЕЖДУ СТРАНИЦАМИ -->
+    <div id="pageTransition">
+        <div class="text-center">
+            <i class="fas fa-arrow-right text-3xl mb-3 text-indigo-500 animate-pulse"></i>
+            <p class="text-sm font-medium tracking-wider theme-text-muted">Загрузка раздела...</p>
+        </div>
+    </div>
+
+    <!-- ОСНОВНОЙ КОНТЕНТ -->
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        
+        <!-- ШАПКА -->
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-4 hero-title">
+                Портал 8Б класса
+            </h1>
+            <div class="w-24 h-1.5 hero-divider mx-auto mb-6 rounded-full"></div>
+            <p class="text-base md:text-lg theme-text-muted max-w-2xl mx-auto leading-relaxed">
+                Единая информационная система: актуальные уроки, домашние задания, новости и база справочников.
+            </p>
+
+            <div class="mt-8 flex flex-wrap justify-center items-center gap-4">
+                <button onclick="location.reload()" class="px-5 py-2.5 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl shadow-md transition duration-200 flex items-center gap-2">
+                    <i class="fas fa-sync-alt"></i> <span>Обновить</span>
+                </button>
+
+                <div class="theme-card border px-4 py-2 rounded-xl shadow-sm flex items-center gap-2.5 text-sm font-medium">
+                    <span class="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></span>
+                    <span>Сервер работает: <strong class="text-indigo-600 dark:text-indigo-400 font-bold">с 05:00 до 04:00</strong> <span class="theme-text-muted text-xs">(перерыв 1 ч)</span></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- СЕТКА РАЗДЕЛОВ -->
+        <main>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Новости -->
+                <a href="news.html" class="page-link w-full">
+                    <div class="portal-card card-news p-6 flex flex-col justify-between h-48">
+                        <div>
+                            <i class="fas fa-newspaper text-4xl text-blue-100"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold mb-1 text-white">Новости</h2>
+                            <p class="text-sm text-blue-100 opacity-95">События, объявления и изменения</p>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Домашние задания -->
+                <a href="homework.html" class="page-link w-full">
+                    <div class="portal-card card-hw p-6 flex flex-col justify-between h-48">
+                        <div>
+                            <i class="fas fa-book text-4xl text-yellow-100"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold mb-1 text-white">Домашние задания</h2>
+                            <p class="text-sm text-yellow-100 opacity-95">Задания, сроки, фото и файлы</p>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Расписание -->
+                <div onclick="openScheduleModal()" class="portal-card card-schedule p-6 flex flex-col justify-between h-48">
+                    <div>
+                        <i class="fas fa-clock text-4xl text-indigo-100"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold mb-1 text-white">Расписание</h2>
+                        <p class="text-sm text-indigo-100 opacity-95">Уроки, кабинеты и время звонков</p>
+                    </div>
+                </div>
+
+                <!-- Справочники -->
+                <a href="handbook.html" class="page-link w-full">
+                    <div class="portal-card card-materials p-6 flex flex-col justify-between h-48">
+                        <div>
+                            <i class="fas fa-graduation-cap text-4xl text-red-100"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold mb-1 text-white">Справочники</h2>
+                            <p class="text-sm text-red-100 opacity-95">Таблицы, схемы и формулы</p>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Проверочные работы -->
+                <a href="tests.html" class="page-link w-full">
+                    <div class="portal-card card-tests p-6 flex flex-col justify-between h-48">
+                        <div>
+                            <i class="fas fa-clipboard-check text-4xl text-cyan-100"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold mb-1 text-white">Проверочные работы</h2>
+                            <p class="text-sm text-cyan-100 opacity-95">Контрольные, лабораторные и зачёты</p>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Фотки -->
+                <a href="photos.html" class="page-link w-full">
+                    <div class="portal-card card-photos p-6 flex flex-col justify-between h-48">
+                        <div>
+                            <i class="fas fa-camera text-4xl text-purple-100"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold mb-1 text-white">Фотки</h2>
+                            <p class="text-sm text-purple-100 opacity-95">Школьные дни и архив моментов</p>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Важные даты -->
+                <a href="dates.html" class="page-link w-full">
+                    <div class="portal-card card-dates p-6 flex flex-col justify-between h-48">
+                        <div>
+                            <i class="fas fa-calendar-alt text-4xl text-green-100"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold mb-1 text-white">Важные даты</h2>
+                            <p class="text-sm text-green-100 opacity-95">Отсчёт до каникул и праздников</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- ВНЕШНИЕ СЕРВИСЫ -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8 max-w-2xl mx-auto">
+                <button type="button" onclick="openVpnWarning('https://www.gosuslugi.ru/school', 'Электронный дневник')" class="service-btn p-4 rounded-2xl shadow-sm flex items-center justify-center gap-3 font-semibold w-full">
+                    <i class="fas fa-external-link-alt text-blue-500 text-lg"></i>
+                    <span>Электронный дневник</span>
+                </button>
+                
+                <button type="button" onclick="openVpnWarning('https://gymnasium41.uralschool.ru', 'Сайт школы')" class="service-btn p-4 rounded-2xl shadow-sm flex items-center justify-center gap-3 font-semibold w-full">
+                    <i class="fas fa-school text-pink-500 text-lg"></i>
+                    <span>Сайт школы</span>
+                </button>
+            </div>
+        </main>
+
+        <!-- ЕДИНЫЙ ПОДВАЛ -->
+        <footer class="mt-20 text-center py-6 border-t theme-card" style="background: transparent !important; border-color: var(--card-border) !important;">
+            <p class="text-sm font-medium theme-text-muted">by Maxlic12 & Cloudflare Pages & Cloudflare tunel & Uvicorn & Google Gemini| theBser (v2.0)</p>
+        </footer>
+    </div>
+
+    <!-- 4. МОДАЛЬНОЕ ОКНО ПРЕДУПРЕЖДЕНИЯ О VPN -->
+    <div id="vpnWarningModal" onclick="closeVpnModal()" style="display: none;" class="fixed inset-0 modal-blur-backdrop z-50 flex items-center justify-center p-4 overflow-y-auto">
+        <div onclick="event.stopPropagation()" class="modal-dialog-zoom theme-card border rounded-3xl max-w-md w-full shadow-2xl p-6 relative text-center">
+            <div class="w-16 h-16 rounded-2xl bg-amber-500/20 text-amber-500 flex items-center justify-center text-3xl mx-auto mb-4 border border-amber-500/30">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2" id="vpnModalTitle">Внимание: Отключите VPN!</h3>
+            <p class="theme-text-muted text-sm leading-relaxed mb-6">
+                Российские государственные сервисы блокируют доступ с иностранных IP-адресов.
+                <br><br>
+                Заходите <b>без использования VPN</b>, желательно через российские браузеры (Яндекс Браузер, Атом) с поддержкой отечественных сертификатов безопасности.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-3 justify-center items-center">
+                <button type="button" onclick="closeVpnModal()" class="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 font-semibold text-xs transition">
+                    Отмена
+                </button>
+                
+                <button type="button" id="vpnModalCopyBtn" onclick="copyVpnTargetUrl()" class="thebser-tab-btn inactive w-full sm:w-auto justify-center">
+                    <i class="fas fa-copy" id="vpnCopyIcon"></i>
+                    <span id="vpnCopyText">Скопировать ссылку</span>
+                </button>
+                
+                <a id="vpnModalProceedBtn" href="#" target="_blank" onclick="closeVpnModal()" class="w-full sm:w-auto px-5 py-2.5 rounded-xl font-bold text-xs bg-indigo-600 hover:bg-indigo-700 text-white transition flex items-center justify-center gap-2 shadow-md">
+                    <span>Перейти</span>
+                    <i class="fas fa-arrow-right text-xs"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. МОДАЛЬНОЕ ОКНО РАСПИСАНИЯ И ЗВОНКОВ -->
+    <div id="scheduleModal" onclick="closeScheduleModal()" style="display: none;" class="fixed inset-0 modal-blur-backdrop z-50 flex items-start md:items-center justify-center p-2.5 sm:p-4 md:p-6 overflow-y-auto">
+        <div onclick="event.stopPropagation()" class="modal-dialog-zoom theme-card border rounded-2xl md:rounded-3xl max-w-7xl w-full my-auto max-h-[92vh] overflow-y-auto shadow-2xl p-3.5 sm:p-6 md:p-8 relative flex flex-col">
+            
+            <!-- Шапка и переключатели режимов -->
+            <div class="sticky -top-3.5 sm:-top-6 md:-top-8 pt-2 pb-3 mb-2 border-b flex flex-col md:flex-row justify-between items-start md:items-center gap-2.5 z-10" style="background-color: var(--card-bg); border-color: var(--card-border) !important;">
+                <div class="flex items-center justify-between w-full md:w-auto">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-indigo-500/20 text-indigo-500 flex items-center justify-center text-xl md:text-2xl">
+                            <i class="fas fa-clock" id="modalHeaderIcon"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-base md:text-2xl font-black leading-tight" id="modalHeaderTitle">Расписание уроков 8Б</h2>
+                            <p class="theme-text-muted text-[11px] md:text-xs">Уроки, кабинеты, звонки и текущие замены</p>
+                        </div>
+                    </div>
+                    <button onclick="closeScheduleModal()" class="md:hidden theme-text-muted hover:text-red-500 text-3xl font-light leading-none p-1 cursor-pointer">&times;</button>
+                </div>
+
+                <div class="flex items-center gap-2 w-full md:w-auto justify-between">
+                    <div class="flex flex-wrap gap-1.5 p-1 rounded-2xl bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-xs font-bold w-full md:w-auto justify-center">
+                        <button id="btnCurrentWeek" onclick="switchScheduleView('week', 0)" class="thebser-tab-btn active">Уроки (тек.)</button>
+                        <button id="btnNextWeek" onclick="switchScheduleView('week', 1)" class="thebser-tab-btn inactive">Уроки (след.)</button>
+                        <button id="btnBellsView" onclick="switchScheduleView('bells', 0)" class="thebser-tab-btn inactive"><i class="fas fa-bell text-[10px]"></i> Звонки</button>
+                    </div>
+                    <button onclick="closeScheduleModal()" class="hidden md:block theme-text-muted hover:text-red-500 text-3xl font-light leading-none p-1 transition cursor-pointer">&times;</button>
+                </div>
+            </div>
+
+            <!-- МОБИЛЬНЫЙ ПЕРЕКЛЮЧАТЕЛЬ ДНЕЙ -->
+            <div id="mobileDayNav" class="flex md:hidden items-center justify-between p-2 mb-3 rounded-2xl border" style="background-color: var(--card-border); border-color: var(--card-border) !important;">
+                <button id="btnPrevDay" onclick="navigateMobileDay(-1)" class="w-10 h-10 rounded-xl flex items-center justify-center font-bold bg-indigo-600 text-white disabled:opacity-20 disabled:pointer-events-none transition shadow-sm">
+                    <i class="fas fa-chevron-left text-sm"></i>
+                </button>
+                <div class="text-center px-2">
+                    <h3 id="mobileDayHeaderTitle" class="text-xs font-bold uppercase tracking-wider text-indigo-500">Понедельник</h3>
+                    <p id="mobileDayHeaderCounter" class="text-[10px] theme-text-muted font-mono font-medium">День 1 из 7</p>
+                </div>
+                <button id="btnNextDay" onclick="navigateMobileDay(1)" class="w-10 h-10 rounded-xl flex items-center justify-center font-bold bg-indigo-600 text-white disabled:opacity-20 disabled:pointer-events-none transition shadow-sm">
+                    <i class="fas fa-chevron-right text-sm"></i>
+                </button>
+            </div>
+
+            <!-- Контейнер вывода уроков или звонков -->
+            <div id="scheduleContainer" class="grid grid-cols-1 md:grid-cols-5 gap-3.5 pb-2">
+                <div class="col-span-full text-center py-12">
+                    <i class="fas fa-spinner fa-spin text-3xl text-indigo-500 mb-3"></i>
+                    <p class="theme-text-muted text-sm font-medium">Загрузка данных с сервера...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ВСПЛЫВАЮЩАЯ ПОДСКАЗКА Д/З В РАСПИСАНИИ -->
+    <div id="hwPopover" class="fixed hidden theme-card border rounded-2xl p-4 shadow-2xl transition-all duration-200 w-80 max-w-[92vw] pointer-events-auto" style="z-index: 100000 !important; box-shadow: 0 16px 40px var(--shadow-color); background-color: var(--card-bg, #ffffff);">
+        <button type="button" onclick="hideHwPopover()" class="absolute top-3 right-3 w-6 h-6 rounded-lg flex items-center justify-center theme-text-muted hover:text-red-500 hover:bg-black/5 dark:hover:bg-white/5 transition text-sm cursor-pointer select-none">
+            <i class="fas fa-times"></i>
+        </button>
+        <div id="popoverItemsContainer"></div>
+    </div>
+
+    <!-- КНОПКА СМЕНЫ ТЕМЫ -->
+    <button id="themeToggleBtn" class="fixed bottom-8 right-8 bg-gradient-to-r from-indigo-500 to-purple-600 text-white w-14 h-14 rounded-full flex items-center justify-center text-2xl shadow-xl z-40 focus:outline-none transition duration-300 hover:scale-110">
+        <i class="fas fa-sun" id="themeIcon"></i>
+    </button>
+
+    <script>
+        const API_URL = "https://api.thebservices.online";
+        let currentTargetUrl = "";
+        let currentWeekOffset = 0;
+        let activeScheduleMode = 'week';
+        let currentMobileDayIndex = 0;
+        let totalMobileDays = 7;
+        let activePopoverHwId = null;
+
+        // ===== 1. ONBOARDING И ПРЕЛОАДЕР =====
+        function initPageLifecycle() {
+            const hasAccepted = localStorage.getItem('thebser_accepted_terms');
+            const welcomeModal = document.getElementById('welcomeOnboardingModal');
+
+            if (!hasAccepted && welcomeModal) {
+                welcomeModal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            } else {
+                runPreloader();
+            }
+        }
+
+        function toggleConsentButton() {
+            const cb = document.getElementById('termsConsentCheckbox');
+            const btn = document.getElementById('enterSiteBtn');
+            if (btn && cb) btn.disabled = !cb.checked;
+        }
+
+        function acceptWelcomeTerms() {
+            localStorage.setItem('thebser_accepted_terms', 'true');
+            const welcomeModal = document.getElementById('welcomeOnboardingModal');
+            if (welcomeModal) welcomeModal.style.display = 'none';
+            document.body.style.overflow = '';
+            runPreloader();
+        }
+
+        function runPreloader() {
+            const preloader = document.getElementById('preloader');
+            if (!preloader) return;
+            preloader.classList.add('active');
+            preloader.classList.remove('fade-out');
+
+            setTimeout(() => {
+                preloader.classList.add('fade-out');
+                setTimeout(() => {
+                    preloader.classList.remove('active');
+                }, 450);
+            }, 750);
+        }
+
+        document.addEventListener('DOMContentLoaded', initPageLifecycle);
+
+        // ===== 2. УПРАВЛЕНИЕ ТЕМОЙ =====
+        function applyTheme(theme) {
+            const icon = document.getElementById('themeIcon');
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark-theme');
+                document.body.classList.add('dark-theme');
+                if (icon) {
+                    icon.classList.remove('fa-sun');
+                    icon.classList.add('fa-moon');
+                }
+            } else {
+                document.documentElement.classList.remove('dark-theme');
+                document.body.classList.remove('dark-theme');
+                if (icon) {
+                    icon.classList.remove('fa-moon');
+                    icon.classList.add('fa-sun');
+                }
+            }
+            localStorage.setItem('thebser_theme', theme);
+        }
+
+        applyTheme(localStorage.getItem('thebser_theme') || 'light');
+
+        const themeBtn = document.getElementById('themeToggleBtn');
+        if (themeBtn) {
+            themeBtn.addEventListener('click', () => {
+                const currentTheme = document.documentElement.classList.contains('dark-theme') ? 'dark' : 'light';
+                applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+            });
+        }
+
+        // ===== 3. ПЕРЕХОД МЕЖДУ СТРАНИЦАМИ =====
+        document.querySelectorAll('.page-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                const targetUrl = this.getAttribute('href');
+                if (!targetUrl || targetUrl.startsWith('#') || targetUrl.startsWith('http')) return;
+                
+                e.preventDefault();
+                const transitionScreen = document.getElementById('pageTransition');
+                if (transitionScreen) transitionScreen.classList.add('active');
+
+                setTimeout(() => {
+                    window.location.href = targetUrl;
+                }, 250);
+            });
+        });
+
+        // ===== 4. VPN ПРЕДУПРЕЖДЕНИЕ =====
+        function openVpnWarning(url, serviceName) {
+            currentTargetUrl = url;
+            const modal = document.getElementById('vpnWarningModal');
+            const proceedBtn = document.getElementById('vpnModalProceedBtn');
+            const title = document.getElementById('vpnModalTitle');
+
+            if (title) title.textContent = `Переход: ${serviceName}`;
+            if (proceedBtn) proceedBtn.href = url;
+            if (modal) {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+
+            const textEl = document.getElementById('vpnCopyText');
+            const iconEl = document.getElementById('vpnCopyIcon');
+            if (textEl) textEl.textContent = "Скопировать ссылку";
+            if (iconEl) iconEl.className = "fas fa-copy";
+        }
+
+        function closeVpnModal() {
+            const modal = document.getElementById('vpnWarningModal');
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+        }
+
+        function copyVpnTargetUrl() {
+            if (!currentTargetUrl) return;
+            navigator.clipboard.writeText(currentTargetUrl).then(() => {
+                const textEl = document.getElementById('vpnCopyText');
+                const iconEl = document.getElementById('vpnCopyIcon');
+                if (textEl) textEl.textContent = "Скопировано!";
+                if (iconEl) iconEl.className = "fas fa-check text-green-500";
+                setTimeout(() => {
+                    if (textEl) textEl.textContent = "Скопировать ссылку";
+                    if (iconEl) iconEl.className = "fas fa-copy";
+                }, 2000);
+            });
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function handleHwClick(event, el) {
+            event.stopPropagation();
+            let hwList = [];
+            const rawJson = el.getAttribute('data-hw-json');
+            if (rawJson) {
+                try {
+                    hwList = JSON.parse(decodeURIComponent(rawJson));
+                } catch (e) {}
+            }
+            if (!hwList.length) {
+                const hwId = el.getAttribute('data-hw-id');
+                const hwTitle = el.getAttribute('data-hw-title');
+                const subj = el.getAttribute('data-hw-subject');
+                const teacher = el.getAttribute('data-hw-teacher') || '';
+                if (hwId) {
+                    hwList = [{ id: hwId, title: hwTitle, subject: subj, teacher: teacher }];
+                }
+            }
+            showHwPopover(event, hwList);
+        }
+
+        function showHwPopover(event, hwList) {
+            if (event) event.stopPropagation();
+            if (!hwList || !hwList.length) return;
+
+            const popover = document.getElementById('hwPopover');
+            const container = document.getElementById('popoverItemsContainer');
+            if (!popover || !container) return;
+
+            // Фильтр: если вместо учителя прилетела дата формата ГГГГ-ММ-ДД — сбрасываем её
+            hwList.forEach(item => {
+                if (item.teacher && /^\d{4}-\d{2}-\d{2}$/.test(String(item.teacher).trim())) {
+                    item.teacher = '';
+                }
+            });
+
+            if (hwList.length === 1) {
+                const item = hwList[0];
+
+                container.innerHTML = `
+                    <div class="flex items-start justify-between gap-2 mb-1.5 pr-6">
+                        <span class="text-[11px] font-black uppercase tracking-wider text-indigo-500 flex items-center gap-1.5 truncate">
+                            <i class="fas fa-book-open"></i>
+                            <span>${escapeHtml(item.subject || 'Предмет')}</span>
+                        </span>
+                        <span class="font-mono text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/70 text-indigo-500 flex-shrink-0">ID: #${item.id}</span>
+                    </div>
+                    <div id="popoverTeacher" class="text-[11px] theme-text-muted font-medium flex items-center gap-1.5 mb-2" style="${item.teacher ? '' : 'display: none;'}">
+                        <i class="fas fa-chalkboard-teacher text-indigo-400"></i>
+                        <span>${escapeHtml(item.teacher || '')}</span>
+                    </div>
+                    <h4 class="font-bold text-xs leading-snug mb-3.5" style="color: var(--text-main);">${escapeHtml(item.title || 'Задание')}</h4>
+                    <div class="pt-2.5 border-t border-gray-100 dark:border-gray-800 flex items-center gap-2">
+                        <a href="homework.html?id=${item.id}" class="flex-1 py-1.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition shadow-sm cursor-pointer">
+                            <span>Открыть задание</span>
+                            <i class="fas fa-arrow-right text-[10px]"></i>
+                        </a>
+                    </div>
+                `;
+
+                // Автоматически подгружаем имя учителя из карточки ДЗ
+                if (!item.teacher && item.id) {
+                    fetch(`${API_URL}/api/homework/${item.id}`, { cache: 'no-store' })
+                        .then(r => r.ok ? r.json() : null)
+                        .then(data => {
+                            if (data && data.teacher && !/^\d{4}-\d{2}-\d{2}$/.test(String(data.teacher).trim())) {
+                                item.teacher = data.teacher;
+                                const tEl = document.getElementById('popoverTeacher');
+                                if (tEl) {
+                                    tEl.innerHTML = `<i class="fas fa-chalkboard-teacher text-indigo-400"></i><span>${escapeHtml(data.teacher)}</span>`;
+                                    tEl.style.display = 'flex';
+                                }
+                            }
+                        })
+                        .catch(() => {});
+                }
+            } else {
+                // Если заданий несколько (подгруппы, разные языки)
+                let itemsHtml = `
+                    <div class="mb-2 pb-1.5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between pr-6">
+                        <span class="text-xs font-black uppercase tracking-wider text-indigo-500 flex items-center gap-1.5">
+                            <i class="fas fa-layer-group"></i>
+                            <span>Задания к уроку (${hwList.length})</span>
+                        </span>
+                    </div>
+                    <div class="space-y-2.5 max-h-[60vh] overflow-y-auto pr-1">
+                `;
+
+                hwList.forEach((item) => {
+                    const isDate = item.teacher && /^\d{4}-\d{2}-\d{2}$/.test(String(item.teacher).trim());
+                    const validTeacher = isDate ? '' : item.teacher;
+                    const teacherText = validTeacher 
+                        ? `<div class="text-[10px] theme-text-muted font-medium mb-1"><i class="fas fa-chalkboard-teacher mr-1 text-indigo-400"></i>${escapeHtml(validTeacher)}</div>` 
+                        : '';
+
+                    itemsHtml += `
+                        <div class="p-2.5 rounded-xl border border-gray-100 dark:border-gray-800 theme-card flex flex-col justify-between" style="background-color: var(--input-bg, rgba(99, 102, 241, 0.04));">
+                            <div class="flex items-center justify-between gap-1 mb-1">
+                                <span class="text-[10px] font-extrabold uppercase text-indigo-500 truncate">${escapeHtml(item.subject || 'Урок')}</span>
+                                <span class="font-mono text-[9px] font-bold text-indigo-400">#${item.id}</span>
+                            </div>
+                            ${teacherText}
+                            <h5 class="font-bold text-xs mb-2 leading-tight" style="color: var(--text-main);">${escapeHtml(item.title || 'Задание')}</h5>
+                            <a href="homework.html?id=${item.id}" class="self-end py-1 px-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold flex items-center gap-1 transition shadow-2xs">
+                                <span>Открыть</span>
+                                <i class="fas fa-arrow-right text-[9px]"></i>
+                            </a>
+                        </div>
+                    `;
+                });
+
+                itemsHtml += `</div>`;
+                container.innerHTML = itemsHtml;
+            }
+
+            popover.classList.remove('hidden');
+
+            const isMobile = window.innerWidth < 768;
+            if (isMobile) {
+                popover.style.left = '50%';
+                popover.style.top = '50%';
+                popover.style.transform = 'translate(-50%, -50%)';
+            } else {
+                let x = event.clientX + 15;
+                let y = event.clientY - 20;
+
+                if (x + 330 > window.innerWidth) x = event.clientX - 335;
+                if (y + 260 > window.innerHeight) y = window.innerHeight - 270;
+
+                popover.style.left = `${Math.max(10, x)}px`;
+                popover.style.top = `${Math.max(10, y)}px`;
+                popover.style.transform = 'none';
+            }
+        }
+
+        function hideHwPopover() {
+            const popover = document.getElementById('hwPopover');
+            if (popover) popover.classList.add('hidden');
+        }
+
+        document.addEventListener('click', (e) => {
+            const popover = document.getElementById('hwPopover');
+            if (popover && !popover.contains(e.target)) {
+                hideHwPopover();
+            }
+        });
+
+        // ===== 6. РАСПИСАНИЕ И ЗВОНКИ =====
+        function openScheduleModal() {
+            const modal = document.getElementById('scheduleModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+            
+            const dayOfWeek = (new Date().getDay() + 6) % 7;
+            currentMobileDayIndex = dayOfWeek;
+
+            switchScheduleView('week', 0);
+        }
+
+        function closeScheduleModal() {
+            const modal = document.getElementById('scheduleModal');
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+            hideHwPopover();
+        }
+
+        function switchScheduleView(mode, offset = 0) {
+            hideHwPopover();
+            activeScheduleMode = mode;
+            currentWeekOffset = offset;
+            
+            const btnCurrent = document.getElementById('btnCurrentWeek');
+            const btnNext = document.getElementById('btnNextWeek');
+            const btnBells = document.getElementById('btnBellsView');
+            const title = document.getElementById('modalHeaderTitle');
+            const icon = document.getElementById('modalHeaderIcon');
+
+            [btnCurrent, btnNext, btnBells].forEach(b => {
+                if (b) b.className = "thebser-tab-btn inactive";
+            });
+
+            if (mode === 'week') {
+                totalMobileDays = 7;
+                if (title) title.textContent = "Расписание уроков 8Б";
+                if (icon) icon.className = "fas fa-clock";
+                if (offset === 0 && btnCurrent) btnCurrent.className = "thebser-tab-btn active";
+                if (offset === 1 && btnNext) btnNext.className = "thebser-tab-btn active";
+                loadScheduleData(offset);
+            } else if (mode === 'bells') {
+                totalMobileDays = 5;
+                if (currentMobileDayIndex > 4) currentMobileDayIndex = 4;
+                if (title) title.textContent = "Расписание звонков 8Б";
+                if (icon) icon.className = "fas fa-bell";
+                if (btnBells) btnBells.className = "thebser-tab-btn active";
+                loadBellsData(offset);
+            }
+        }
+
+        function navigateMobileDay(delta) {
+            hideHwPopover();
+            const newIndex = currentMobileDayIndex + delta;
+            if (newIndex >= 0 && newIndex < totalMobileDays) {
+                currentMobileDayIndex = newIndex;
+                syncMobileDayDisplay();
+            }
+        }
+
+        function syncMobileDayDisplay() {
+            const cards = document.querySelectorAll('.day-card-item');
+            if (!cards || cards.length === 0) return;
+
+            if (currentMobileDayIndex >= cards.length) {
+                currentMobileDayIndex = cards.length - 1;
+            }
+
+            cards.forEach((card, idx) => {
+                if (idx === currentMobileDayIndex) {
+                    card.classList.add('active-mobile-day');
+                } else {
+                    card.classList.remove('active-mobile-day');
+                }
+            });
+
+            const activeCard = cards[currentMobileDayIndex];
+            const dayName = activeCard ? activeCard.getAttribute('data-day-name') : '';
+
+            const titleEl = document.getElementById('mobileDayHeaderTitle');
+            const counterEl = document.getElementById('mobileDayHeaderCounter');
+            const btnPrev = document.getElementById('btnPrevDay');
+            const btnNext = document.getElementById('btnNextDay');
+
+            if (titleEl) titleEl.textContent = dayName || `День ${currentMobileDayIndex + 1}`;
+            if (counterEl) counterEl.textContent = `День ${currentMobileDayIndex + 1} из ${cards.length}`;
+
+            if (btnPrev) btnPrev.disabled = (currentMobileDayIndex === 0);
+            if (btnNext) btnNext.disabled = (currentMobileDayIndex === cards.length - 1);
+        }
+
+        async function loadScheduleData(offset = 0) {
+            const container = document.getElementById('scheduleContainer');
+            if (!container) return;
+            container.className = "grid grid-cols-1 md:grid-cols-5 gap-3.5 pb-2";
+
+            container.innerHTML = `
+                <div class="col-span-full text-center py-10">
+                    <i class="fas fa-circle-notch fa-spin text-2xl text-indigo-500 mb-2"></i>
+                    <p class="theme-text-muted text-xs">Загрузка уроков из базы...</p>
+                </div>
+            `;
+
+            try {
+                const res = await fetch(`${API_URL}/api/schedule/week?week_offset=${offset}`, { cache: 'no-store' });
+                if (!res.ok) throw new Error();
+                const allDays = await res.json();
+
+                if (activeScheduleMode !== 'week') return;
+
+                const now = new Date();
+                const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+                const months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+
+                const weekDays = allDays.slice(0, 5);
+                const mondayDateParts = weekDays[0].date.split('-');
+                const mondayDate = new Date(parseInt(mondayDateParts[0]), parseInt(mondayDateParts[1]) - 1, parseInt(mondayDateParts[2]));
+
+                const satDate = new Date(mondayDate);
+                satDate.setDate(mondayDate.getDate() + 5);
+                const satStr = `${satDate.getFullYear()}-${String(satDate.getMonth() + 1).padStart(2, '0')}-${String(satDate.getDate()).padStart(2, '0')}`;
+
+                const sunDate = new Date(mondayDate);
+                sunDate.setDate(mondayDate.getDate() + 6);
+                const sunStr = `${sunDate.getFullYear()}-${String(sunDate.getMonth() + 1).padStart(2, '0')}-${String(sunDate.getDate()).padStart(2, '0')}`;
+
+                const weekendDays = [
+                    { day_of_week: "Суббота", date: satStr, dayNum: satDate.getDate(), month: months[satDate.getMonth()], isToday: (satStr === todayStr) },
+                    { day_of_week: "Воскресенье", date: sunStr, dayNum: sunDate.getDate(), month: months[sunDate.getMonth()], isToday: (sunStr === todayStr) }
+                ];
+
+                function renderWorkDay(d, dayIdx) {
+                    const isToday = (d.date === todayStr);
+                    const dateParts = d.date.split('-');
+                    const dayNum = parseInt(dateParts[2], 10);
+                    const monthName = months[parseInt(dateParts[1], 10) - 1];
+                    const fullDateText = `${dayNum} ${monthName}`;
+
+                    let borderClass = 'border border-gray-200 dark:border-gray-800';
+                    if (d.is_override && isToday) {
+                        borderClass = 'border-2 border-indigo-500 shadow-md shadow-indigo-500/20 ring-1 ring-purple-400';
+                    } else if (d.is_override) {
+                        borderClass = 'border-2 border-red-500 shadow-md shadow-red-500/15 ring-1 ring-red-400';
+                    } else if (isToday) {
+                        borderClass = 'border-2 border-blue-500 shadow-md shadow-blue-500/15 ring-1 ring-blue-400';
+                    }
+
+                    let topRibbon = '';
+                    if (d.is_override && isToday) {
+                        topRibbon = `
+                            <div class="text-white font-black -mx-3.5 -mt-3.5 mb-2.5 p-2 rounded-t-xl tracking-wider uppercase flex flex-col items-center justify-center gap-1 shadow-sm" style="background: linear-gradient(135deg, #2563eb 0%, #7c3aed 50%, #dc2626 100%) !important;">
+                                <span class="flex items-center gap-1 text-[10px] leading-tight text-blue-100">
+                                    <i class="fas fa-calendar-day text-[9px]"></i> Сегодня
+                                </span>
+                                <span class="flex items-center gap-1 text-[9px] leading-tight text-amber-300 text-center break-words animate-pulse">
+                                    <i class="fas fa-bolt text-[8px]"></i> Изменено
+                                </span>
+                            </div>
+                        `;
+                    } else if (d.is_override) {
+                        topRibbon = `
+                            <div class="text-white font-black text-[10px] py-1.5 px-2 text-center -mx-3.5 -mt-3.5 mb-2.5 rounded-t-xl tracking-wider uppercase flex items-center justify-center gap-1.5 shadow-sm break-words" style="background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%) !important;">
+                                <i class="fas fa-bolt text-amber-300 animate-pulse text-[9px]"></i>
+                                <span>Изменено</span>
+                            </div>
+                        `;
+                    } else if (isToday) {
+                        topRibbon = `
+                            <div class="text-white font-black text-[10px] py-1.5 px-2 text-center -mx-3.5 -mt-3.5 mb-2.5 rounded-t-xl tracking-wider uppercase flex items-center justify-center gap-1.5 shadow-sm" style="background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%) !important;">
+                                <i class="fas fa-calendar-day text-[9px]"></i>
+                                <span>Сегодня</span>
+                            </div>
+                        `;
+                    }
+
+                    let lessonsHtml = '';
+                    if (d.lessons && d.lessons.length > 0) {
+                        lessonsHtml = d.lessons.map(l => {
+                            const isChanged = Boolean(l.is_changed);
+                            
+
+                            if (l.is_extracurricular || l.lesson_number === 0 || l.lesson_number === 2.5 || l.lesson_number === 3.5) {
+                                const extraBorder = isChanged
+                                    ? 'border-2 border-red-500 shadow-sm shadow-red-500/20 ring-1 ring-red-400/50'
+                                    : 'border border-dashed';
+                                const extraStyle = isChanged
+                                    ? 'style="background-color: rgba(239, 68, 68, 0.12) !important; border-color: #ef4444 !important;"'
+                                    : 'style="background-color: var(--card-border) !important; border-color: #6366f1;"';
+                                const extraBadge = isChanged
+                                    ? `<span class="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded text-white bg-red-500 animate-pulse">Замена</span>`
+                                    : `<span class="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded text-indigo-400" style="background: rgba(99, 102, 241, 0.2);">Внеурочно</span>`;
+
+                                return `
+                                    <div class="my-1.5 p-2 rounded-xl flex flex-col gap-1 transition-all ${extraBorder}" ${extraStyle}>
+                                        <div class="flex items-center justify-between">
+                                            ${extraBadge}
+                                            ${l.room && l.room !== '—' ? `<span class="text-[10px] font-mono theme-text-muted">каб. ${l.room}</span>` : ''}
+                                        </div>
+                                        <span class="font-bold text-xs leading-tight" style="color: var(--text-main) !important;">${l.subject}</span>
+                                    </div>
+                                `;
+                            }
+
+                            const lessonWrapperClass = isChanged
+                                ? 'my-1 p-2 border-2 border-red-500 bg-red-500/10 rounded-xl text-xs flex justify-between items-center gap-2 shadow-sm shadow-red-500/15 ring-1 ring-red-400/40 transition-all'
+                                : 'py-1.5 border-b last:border-none border-gray-100 dark:border-gray-800 text-xs flex justify-between items-center gap-2 transition-all';
+
+                            const numBgStyle = isChanged
+                                ? 'background-color: #ef4444 !important; color: #ffffff !important;'
+                                : 'background-color: var(--card-border) !important; color: #818cf8;';
+
+                            const roomStyle = isChanged
+                                ? 'background-color: rgba(239, 68, 68, 0.25) !important; color: #ef4444 !important; font-weight: bold;'
+                                : 'background-color: var(--card-border) !important;';
+
+                            const hwList = (l.homeworks && l.homeworks.length > 0) 
+    ? l.homeworks 
+    : (l.homework ? [{
+        id: l.homework.id,
+        title: l.homework.title,
+        subject: l.homework.subject || l.subject,
+        teacher: l.homework.teacher || ''
+    }] : []);
+const hasHw = hwList.length > 0;
+const hwJsonAttr = hasHw ? encodeURIComponent(JSON.stringify(hwList)) : '';
+const badgeLabel = hwList.length > 1 ? `ДЗ (${hwList.length})` : 'ДЗ';
+
+const hwBadge = hasHw
+? `<button onclick="handleHwClick(event, this)" data-hw-json="${hwJsonAttr}" class="badge-dz-orange px-2 py-0.5 rounded-md text-[10px] font-black tracking-wider cursor-pointer flex-shrink-0" title="Есть ДЗ (${hwList.length} шт.)">
+        ${badgeLabel}
+    </button>`
+: '';
+
+const rowHwAttrs = hasHw
+    ? `onclick="handleHwClick(event, this)" data-hw-json="${hwJsonAttr}" style="cursor: pointer;"`
+    : '';
+
+                            return `
+                                <div class="${lessonWrapperClass}" ${rowHwAttrs}>
+                                    <div class="flex items-center gap-2 min-w-0 flex-1">
+                                        <span class="w-5 h-5 flex-shrink-0 rounded-md flex items-center justify-center font-bold text-[11px]" style="${numBgStyle}">${l.lesson_number}</span>
+                                        <span class="font-medium truncate ${isChanged ? 'font-bold text-red-500' : ''}" style="${isChanged ? 'color: #ef4444 !important;' : 'color: var(--text-main) !important;'}" title="${l.subject}">${l.subject}</span>
+                                        ${hwBadge}
+                                    </div>
+                                    <span class="text-[11px] font-mono px-1.5 py-0.5 rounded flex-shrink-0 theme-text-muted" style="${roomStyle}">${l.room}</span>
+                                </div>
+                            `;
+                        }).join('');
+                    } else {
+                        lessonsHtml = `<div class="theme-text-muted text-xs py-6 text-center">Нет уроков</div>`;
+                    }
+
+                    const titleColor = (isToday && !d.is_override) ? 'color: #3b82f6;' : 'color: #818cf8;';
+
+                    return `
+                        <div class="day-card-item theme-card ${borderClass} rounded-2xl p-3.5 flex flex-col justify-between shadow-xs transition-all relative overflow-hidden" data-day-name="${d.day_of_week}" data-day-index="${dayIdx}">
+                            <div>
+                                ${topRibbon}
+                                <div class="mb-2.5 pb-2 border-b border-gray-100 dark:border-gray-800">
+                                    <h3 class="font-bold text-sm" style="${titleColor}">${d.day_of_week}</h3>
+                                    <p class="text-[11px] theme-text-muted font-medium">${fullDateText}</p>
+                                </div>
+                                <div class="flex flex-col">${lessonsHtml}</div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                function renderWeekendCard(w, dayIdx) {
+                    const borderClass = w.isToday 
+                        ? 'border-2 border-blue-500 ring-2 ring-blue-400/30 shadow-md shadow-blue-500/10' 
+                        : 'border border-gray-200 dark:border-gray-800';
+
+                    return `
+                        <div class="day-card-item theme-card ${borderClass} rounded-2xl p-3.5 flex items-center justify-between shadow-xs gap-2 overflow-hidden" data-day-name="${w.day_of_week}" data-day-index="${dayIdx}" style="background-color: var(--card-border) !important;">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-500 flex items-center justify-center text-lg flex-shrink-0">
+                                    <i class="fas fa-mug-hot"></i>
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="flex items-center gap-1.5 flex-wrap">
+                                        <h4 class="font-bold text-sm" style="color: var(--text-main) !important;">${w.day_of_week}</h4>
+                                        ${w.isToday ? '<span class="bg-blue-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider flex-shrink-0">Сегодня</span>' : ''}
+                                    </div>
+                                    <p class="text-xs font-semibold text-indigo-400 truncate">${w.dayNum} ${w.month}</p>
+                                </div>
+                            </div>
+                            <div class="flex-shrink-0 text-right">
+                                <span class="text-[11px] font-bold theme-text-muted px-2.5 py-1.5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-2xs inline-block" style="background-color: var(--card-bg) !important;">
+                                    ${w.isToday ? '🎉 Отдыхаем!' : 'Выходной день'}
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                const weekHtml = weekDays.map((d, i) => renderWorkDay(d, i)).join('');
+                const satHtml = renderWeekendCard(weekendDays[0], 5);
+                const sunHtml = renderWeekendCard(weekendDays[1], 6);
+
+                container.innerHTML = `
+                    ${weekHtml}
+                    <div class="col-span-full mt-3 pt-3 border-t border-gray-200 dark:border-gray-800 mobile-weekend-wrapper">
+                        <div class="flex items-center gap-2 mb-2.5 mobile-weekend-title">
+                            <i class="fas fa-couch text-indigo-500 text-sm"></i>
+                            <span class="text-xs font-bold uppercase tracking-wider theme-text-muted">Выходные дни</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            ${satHtml}
+                            ${sunHtml}
+                        </div>
+                    </div>
+                `;
+
+                syncMobileDayDisplay();
+
+            } catch (err) {
+                if (activeScheduleMode !== 'week') return;
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-10">
+                        <i class="fas fa-exclamation-triangle text-amber-500 text-3xl mb-2"></i>
+                        <h4 class="font-bold text-sm">Не удалось загрузить расписание</h4>
+                        <p class="theme-text-muted text-xs mt-1">Проверьте соединение с сервером.</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function loadBellsData(offset = 0) {
+            const container = document.getElementById('scheduleContainer');
+            if (!container) return;
+
+            container.className = "grid grid-cols-1 md:grid-cols-5 gap-3.5 pb-2";
+            container.innerHTML = `
+                <div class="col-span-full text-center py-10">
+                    <i class="fas fa-circle-notch fa-spin text-2xl text-indigo-500 mb-2"></i>
+                    <p class="theme-text-muted text-xs">Загрузка звонков с сервера...</p>
+                </div>
+            `;
+
+            try {
+                const res = await fetch(`${API_URL}/api/schedule/bells/week?week_offset=${offset}`, { cache: 'no-store' });
+                if (!res.ok) throw new Error();
+                const days = await res.json();
+
+                if (activeScheduleMode !== 'bells') return;
+
+                const now = new Date();
+                const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+                container.innerHTML = days.map((d, dayIdx) => {
+                    const isToday = (d.date === todayStr);
+
+                    let borderClass = 'border border-gray-200 dark:border-gray-800';
+                    if (d.is_overridden && isToday) {
+                        borderClass = 'border-2 border-indigo-500 shadow-md shadow-indigo-500/20 ring-1 ring-purple-400';
+                    } else if (d.is_overridden) {
+                        borderClass = 'border-2 border-red-500 shadow-md shadow-red-500/15 ring-1 ring-red-400';
+                    } else if (isToday) {
+                        borderClass = 'border-2 border-blue-500 shadow-md shadow-blue-500/15 ring-1 ring-blue-400';
+                    }
+
+                    let topRibbon = '';
+                    if (d.is_overridden && isToday) {
+                        topRibbon = `
+                            <div class="text-white font-black -mx-3.5 -mt-3.5 mb-2.5 p-2 rounded-t-xl tracking-wider uppercase flex flex-col items-center justify-center gap-1 shadow-sm text-center" style="background: linear-gradient(135deg, #2563eb 0%, #7c3aed 50%, #dc2626 100%) !important;">
+                                <span class="flex items-center gap-1 text-[10px] leading-tight text-blue-100">
+                                    <i class="fas fa-calendar-day text-[9px]"></i> Сегодня
+                                </span>
+                                <span class="flex items-center gap-1 text-[9px] leading-tight text-amber-300 break-words text-center">
+                                    <i class="fas fa-bolt text-[8px] animate-pulse"></i> ${d.status_label || 'Изменено'}
+                                </span>
+                            </div>
+                        `;
+                    } else if (d.is_overridden) {
+                        topRibbon = `
+                            <div class="text-white font-black text-[10px] py-1.5 px-2 text-center -mx-3.5 -mt-3.5 mb-2.5 rounded-t-xl tracking-wider uppercase flex items-center justify-center gap-1.5 shadow-sm break-words" style="background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%) !important;">
+                                <i class="fas fa-bolt text-amber-300 animate-pulse text-[9px]"></i>
+                                <span class="break-words">${d.status_label || 'Изменено'}</span>
+                            </div>
+                        `;
+                    } else if (isToday) {
+                        topRibbon = `
+                            <div class="text-white font-black text-[10px] py-1.5 px-2 text-center -mx-3.5 -mt-3.5 mb-2.5 rounded-t-xl tracking-wider uppercase flex items-center justify-center gap-1.5 shadow-sm" style="background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%) !important;">
+                                <i class="fas fa-calendar-day text-[9px]"></i>
+                                <span>Сегодня</span>
+                            </div>
+                        `;
+                    }
+
+                    const bellsRows = d.bells.map(b => `
+                        <div class="py-1.5 border-b last:border-none border-gray-100 dark:border-gray-800 text-xs flex justify-between items-center gap-1.5">
+                            <span class="font-medium truncate" style="color: var(--text-main) !important;">${b.title}</span>
+                            <div class="text-right flex-shrink-0">
+                                <span class="font-mono font-bold text-indigo-400">${b.time_start}–${b.time_end}</span>
+                                ${b.break_duration > 0 ? `<span class="block text-[10px] theme-text-muted">пер. ${b.break_duration} мин</span>` : ''}
+                            </div>
+                        </div>
+                    `).join('');
+
+                    const titleColor = (isToday && !d.is_overridden) ? 'color: #3b82f6;' : 'color: #818cf8;';
+
+                    return `
+                        <div class="day-card-item theme-card ${borderClass} rounded-2xl p-3.5 flex flex-col justify-between shadow-xs transition-all relative overflow-hidden" data-day-name="${d.day_of_week}" data-day-index="${dayIdx}">
+                            <div>
+                                ${topRibbon}
+                                <div class="mb-2.5 pb-2 border-b border-gray-100 dark:border-gray-800">
+                                    <h3 class="font-bold text-sm" style="${titleColor}">${d.day_of_week}</h3>
+                                    <p class="text-[11px] theme-text-muted font-medium">${d.formatted_date}</p>
+                                </div>
+                                <div class="flex flex-col">${bellsRows}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                syncMobileDayDisplay();
+
+            } catch (err) {
+                if (activeScheduleMode !== 'bells') return;
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-10">
+                        <i class="fas fa-exclamation-triangle text-amber-500 text-3xl mb-2"></i>
+                        <h4 class="font-bold text-sm">Не удалось загрузить звонки</h4>
+                        <p class="theme-text-muted text-xs mt-1">Проверьте соединение с сервером.</p>
+                    </div>
+                `;
+            }
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' || e.keyCode === 27) {
+                closeVpnModal();
+                closeScheduleModal();
+            }
+        });
+
+        // Открытие ДЗ по клику на бейдж в расписании
+
+    </script>
+</body>
+</html>

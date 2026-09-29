@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>theBser — Фотоархив класса</title>
+
+
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=111460868', 'ym');
+
+    ym(111460868, 'init', {ssr:true, webvisor:true, clickmap:true, referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/111460868" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+
+
+
+
+    <script>
+        const initialTheme = localStorage.getItem('thebser_theme') || 'light';
+        if (initialTheme === 'dark') document.documentElement.classList.add('dark-theme');
+    </script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="thebser-core.css">
+
+    <style>
+        .photo-card { 
+            transition: all 0.25s ease; 
+            cursor: pointer; 
+        }
+        .photo-card:hover { 
+            transform: translateY(-4px); 
+            box-shadow: 0 16px 30px var(--shadow-color); 
+            border-color: var(--primary) !important;
+        }
+
+        /* Анимации для окна жалобы */
+@keyframes reportBackdropFadeIn {
+    from { opacity: 0; backdrop-filter: blur(0px); }
+    to { opacity: 1; backdrop-filter: blur(8px); }
+}
+
+@keyframes reportCardPopIn {
+    0% { opacity: 0; transform: scale(0.92) translateY(14px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.report-backdrop-animated {
+    animation: reportBackdropFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.report-card-animated {
+    animation: reportCardPopIn 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+    </style>
+</head>
+<body class="p-3 sm:p-6 md:p-10">
+    <div class="max-w-6xl mx-auto">
+        <!-- Шапка раздела -->
+        <header class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-6 mb-6 border-b gap-4" style="border-color: var(--card-border) !important;">
+            <div class="flex items-center gap-3">
+                <a href="index.html" class="px-3.5 py-2 rounded-2xl theme-card border hover:border-indigo-500 font-semibold text-xs transition shadow-sm">
+                    <i class="fas fa-arrow-left text-indigo-500"></i> <span>На главную</span>
+                </a>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-black flex items-center gap-2">
+                        <span>Фотоархив класса</span>
+                        <span class="text-xs px-2 py-0.5 rounded-lg bg-indigo-500/20 text-indigo-500 font-bold uppercase">6–8 класс</span>
+                    </h1>
+                    <p class="theme-text-muted text-xs">История и события коллектива в снимках</p>
+                </div>
+            </div>
+            <a href="https://t.me/thebser_suggest_bot?start=suggest_photo" target="_blank" class="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-md hover:opacity-95">
+                <i class="fas fa-camera"></i> <span>Предложить фото</span>
+            </a>
+        </header>
+
+        <!-- Вкладки фильтрации по классам со счётчиками -->
+        <div id="classFilterContainer" class="flex flex-wrap gap-2 mb-6">
+            <button onclick="switchClassTab('all', this)" class="thebser-tab-btn active">
+                <span>Все фото</span>
+                <span id="badgeCountAll" class="px-1.5 py-0.5 rounded-md font-mono text-[10px] bg-white/20 text-white">0</span>
+            </button>
+            <button onclick="switchClassTab('8', this)" class="thebser-tab-btn inactive">
+                <span>8 класс (новые)</span>
+                <span id="badgeCount8" class="px-1.5 py-0.5 rounded-md font-mono text-[10px] bg-indigo-500/10 text-indigo-500 font-bold">0</span>
+            </button>
+            <button onclick="switchClassTab('7', this)" class="thebser-tab-btn inactive">
+                <span>7 класс</span>
+                <span id="badgeCount7" class="px-1.5 py-0.5 rounded-md font-mono text-[10px] bg-indigo-500/10 text-indigo-500 font-bold">54</span>
+            </button>
+            <button onclick="switchClassTab('6', this)" class="thebser-tab-btn inactive">
+                <span>6 класс</span>
+                <span id="badgeCount6" class="px-1.5 py-0.5 rounded-md font-mono text-[10px] bg-indigo-500/10 text-indigo-500 font-bold">58</span>
+            </button>
+        </div>
+
+        <!-- Сетка фотокарточек -->
+        <main id="photosGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 pb-12">
+            <div class="col-span-full text-center py-20">
+                <i class="fas fa-circle-notch fa-spin text-3xl text-indigo-500 mb-3"></i>
+                <p class="theme-text-muted text-sm font-medium">Загрузка архива...</p>
+            </div>
+        </main>
+
+        <footer class="mt-20 text-center py-6 border-t theme-card" style="background: transparent !important; border-color: var(--card-border) !important;">
+            <p class="text-sm font-medium theme-text-muted">by Maxlic12 & Cloudflare Pages & Cloudflare tunel & Uvicorn & Google Gemini| theBser (v2.0)</p>
+        </footer>
+    </div>
+
+    <!-- Модальное окно с динамической автоподгонкой под экран -->
+    <div id="photoModal" onclick="closePhotoModal()" style="display: none;" class="fixed inset-0 modal-blur-backdrop z-50 flex items-center justify-center p-2 sm:p-4 overflow-hidden select-none">
+        <div id="photoModalCard" onclick="event.stopPropagation()" class="modal-dialog-zoom theme-card border rounded-3xl shadow-2xl p-3.5 sm:p-5 relative flex flex-col justify-between transition-all duration-150 box-border overflow-hidden">
+            
+            <!-- Шапка: заголовок, дата и крестик -->
+            <div id="modalHeader" class="flex items-start justify-between gap-3 mb-2 flex-shrink-0">
+                <div class="min-w-0 flex-1">
+                    <div class="flex items-center gap-2 mb-1 flex-wrap">
+                        <span id="modalPhotoClassBadge" class="text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-500 border border-indigo-500/20">8 класс</span>
+                        <span id="modalPhotoAuthor" class="text-xs font-bold text-indigo-500 truncate">Автор</span>
+                        <span id="modalPhotoDate" class="text-xs theme-text-muted flex-shrink-0">• Дата</span>
+                    </div>
+                    <h3 id="modalPhotoTitle" class="text-sm sm:text-base font-black leading-snug truncate">Подпись к фото</h3>
+                </div>
+                <button type="button" onclick="closePhotoModal()" class="theme-text-muted hover:text-red-500 text-3xl font-light leading-none p-1 -mt-1 cursor-pointer transition select-none flex-shrink-0">&times;</button>
+            </div>
+
+            <!-- Контейнер фото -->
+            <div id="modalImgContainer" class="flex-1 min-h-0 w-full flex items-center justify-center bg-black/5 dark:bg-black/30 rounded-2xl p-1 mb-2 overflow-hidden">
+                <img id="modalPhotoImg" src="" alt="Фотография" class="w-auto h-auto object-contain rounded-xl shadow-sm block transition-all duration-150">
+            </div>
+
+            <!-- Подвал: ID, жалоба и скачивание -->
+            <div id="modalFooter" class="pt-2 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between text-xs theme-text-muted gap-2 flex-shrink-0">
+                <div class="flex items-center gap-2">
+                    <span id="modalPhotoId" class="font-mono font-bold px-2 py-1 rounded-lg bg-gray-100 dark:bg-gray-800 text-indigo-500 text-[11px]">ID: #0</span>
+                    <button type="button" id="modalPhotoReportBtn" onclick="openPhotoReportModal()" class="px-2.5 py-1 rounded-lg border border-gray-200 dark:border-gray-800 hover:border-red-500/50 hover:text-red-500 transition flex items-center gap-1.5 cursor-pointer">
+                    <i class="fas fa-flag text-[10px]"></i>
+                    <span>Жалоба</span>
+                    </button>
+                    <button type="button" onclick="shareCurrentPhoto(this)" class="px-2.5 py-1 rounded-lg border border-indigo-500/30 text-indigo-500 hover:bg-indigo-500/10 transition font-bold flex items-center gap-1.5 text-[11px]">
+                        <i class="fas fa-share-alt"></i>
+                        <span>Поделиться</span>
+                    </button>
+                </div>
+                <button onclick="downloadCurrentModalPhoto()" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-sm flex-shrink-0 cursor-pointer">
+                    <i class="fas fa-download text-[11px]"></i>
+                    <span>Скачать</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО ЖАЛОБЫ НА ФОТО (КАК В НОВОСТЯХ) -->
+<div id="photoReportModal" style="display: none; z-index: 99999 !important;" onclick="closePhotoReportModal()" class="fixed inset-0 flex items-center justify-center p-4 bg-black/60 report-backdrop-animated">
+    <div onclick="event.stopPropagation()" class="report-card-animated theme-card border rounded-3xl max-w-sm w-full p-6 shadow-2xl relative text-center" style="background-color: var(--card-bg, #ffffff);">
+        
+        <!-- Иконка щита в рамке -->
+        <div class="w-14 h-14 mx-auto mb-4 rounded-2xl border border-gray-100 dark:border-gray-800 flex items-center justify-center shadow-sm" style="background-color: var(--input-bg, #ffffff);">
+            <i class="fas fa-shield-alt text-2xl text-red-500"></i>
+        </div>
+
+        <h3 class="text-base sm:text-lg font-bold mb-1.5" style="color: var(--text-main);">Жалоба на публикацию</h3>
+        <p class="text-xs theme-text-muted mb-5 leading-relaxed max-w-xs mx-auto">
+            Жалобы рассматриваются администрацией через бота модерации theBser.
+        </p>
+
+        <!-- Карточка с номером -->
+        <div class="p-4 rounded-2xl border text-left mb-6 space-y-1.5" style="background-color: var(--input-bg, #f8fafc); border-color: var(--card-border);">
+            <p class="text-xs theme-text-muted">
+                Номер публикации: <b id="reportModalPhotoNum" class="text-indigo-600 dark:text-indigo-400 font-mono font-bold">#0</b>
+            </p>
+            <p class="text-xs theme-text-muted leading-relaxed">
+                Нажмите «Открыть бота» для отправки жалобы модераторам.
+            </p>
+        </div>
+
+        <!-- Кнопки Отмена / Открыть бота -->
+        <div class="flex items-center gap-3">
+            <button type="button" onclick="closePhotoReportModal()" class="flex-1 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 font-bold text-xs transition cursor-pointer text-center" style="color: var(--text-main);">
+                Отмена
+            </button>
+            <a id="reportModalBotLink" href="#" target="_blank" onclick="closePhotoReportModal()" class="flex-1 py-3 rounded-2xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs flex items-center justify-center gap-2 transition shadow-md cursor-pointer">
+                <i class="fab fa-telegram-plane text-sm"></i>
+                <span>Открыть бота</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+    <script>
+        const API_URL = "https://api.thebservices.online";
+        let dbPhotos = [];
+        let combinedPhotos = [];
+        let currentTab = 'all';
+        let activePhoto = null;
+
+        const ARCHIVE_PHOTOS = [
+            // --- 6 КЛАСС ---
+            ...[1,2,3,4,5].map(n => ({ id: `6_${n}`, class_grade: '6', title: 'Школьный день, 2025', author_info: 'Архив 6Б', date: '2025', file_path: `img/${n}.jpg` })),
+            ...[6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58].map(n => ({ id: `6_${n}`, class_grade: '6', title: 'Школьный день, 2023', author_info: 'Архив 6Б', date: '2023', file_path: `img/${n}.jpg` })),
+            { id: '6_59', class_grade: '6', title: 'Школьный день, 2024', author_info: 'Архив 6Б', date: '2024', file_path: 'img/59.jpg' },
+
+            // --- 7 КЛАСС ---
+            { id: '7_60', class_grade: '7', title: 'Чоткие пацанчики, 2025', file_path: 'img/60.jpg' },
+            { id: '7_61', class_grade: '7', title: 'Типичный веник, 2025', file_path: 'img/61.jpg' },
+            { id: '7_62', class_grade: '7', title: '#Эвакуация, 2025', file_path: 'img/62.jpg' },
+            { id: '7_63', class_grade: '7', title: 'Наказали Катаева за плохое поведение, 2025', file_path: 'img/63.jpg' },
+            { id: '7_64', class_grade: '7', title: 'Наказали Шовелия за плохое поведение, 2025', file_path: 'img/64.jpg' },
+            { id: '7_65', class_grade: '7', title: 'Любовь века, 2025', file_path: 'img/65.jpg' },
+            { id: '7_66', class_grade: '7', title: 'Потерялся, 2025', file_path: 'img/66.jpg' },
+            { id: '7_67', class_grade: '7', title: '36 размер, 2025', file_path: 'img/67.jpg' },
+            { id: '7_68', class_grade: '7', title: '"Мама, у меня температура 666°C! Можна я в школу не пайду?", 2025', file_path: 'img/68.jpg' },
+            { id: '7_69', class_grade: '7', title: 'Чистосердечное признание, 2025', file_path: 'img/69.jpg' },
+            { id: '7_70', class_grade: '7', title: 'Носопятка 2.0, 2025', file_path: 'img/70.jpg' },
+            { id: '7_71', class_grade: '7', title: 'ВАУ, 2025', file_path: 'img/71.jpg' },
+            { id: '7_72', class_grade: '7', title: 'Фотка всем классом (1), 2025', file_path: 'img/72.jpg' },
+            { id: '7_73', class_grade: '7', title: 'Фотка всем классом (2), 2025', file_path: 'img/73.jpg' },
+            { id: '7_74', class_grade: '7', title: 'Пытаемя все прыгнуть (1), 2025', file_path: 'img/74.jpg' },
+            { id: '7_75', class_grade: '7', title: 'Пытаемя все прыгнуть (2), 2025', file_path: 'img/75.jpg' },
+            { id: '7_76', class_grade: '7', title: '"Судью на мыло!", 2025', file_path: 'img/76.jpg' },
+            { id: '7_77', class_grade: '7', title: 'Мистр серьёзность, 2025', file_path: 'img/77.jpg' },
+            { id: '7_78', class_grade: '7', title: '"Я календарь...", 2025', file_path: 'img/78.jpg' },
+            { id: '7_79', class_grade: '7', title: 'ХВЫХВХВЫВ, 2025', file_path: 'img/79.jpg' },
+            { id: '7_80', class_grade: '7', title: 'Оперный певец, 2025', file_path: 'img/80.jpg' },
+            { id: '7_81', class_grade: '7', title: 'Весёлый и давольный жизнью человек, 2025', file_path: 'img/81.jpg' },
+            { id: '7_82', class_grade: '7', title: 'Типо умер, 2025', file_path: 'img/82.jpg' },
+            { id: '7_83', class_grade: '7', title: '"НЕ ТРОЖЬ МОЙ ВЕЛОСИПЕД!", 2025', file_path: 'img/83.jpg' },
+            { id: '7_84', class_grade: '7', title: 'Любитель русского языка, 2025', file_path: 'img/84.jpg' },
+            { id: '7_85', class_grade: '7', title: 'Поём гимн, 2025', file_path: 'img/85.jpg' },
+            { id: '7_86', class_grade: '7', title: 'Фотки на 0.5, 2025', file_path: 'img/86.jpg' },
+            { id: '7_87', class_grade: '7', title: 'Весь класс в коридоре, 2025', file_path: 'img/87.jpg' },
+            { id: '7_88', class_grade: '7', title: 'Чутка размазало, 2025', file_path: 'img/88.jpg' },
+            { id: '7_89', class_grade: '7', title: 'Лечим зубки с любовью, 2025', file_path: 'img/89.jpg' },
+            { id: '7_90', class_grade: '7', title: '"Чё сказал?", 2025', file_path: 'img/90.jpg' },
+            { id: '7_91', class_grade: '7', title: '"Чё говоришь?", 2025', file_path: 'img/91.jpg' },
+            { id: '7_92', class_grade: '7', title: 'Агапов с линейкой, 2025', file_path: 'img/92.jpg' },
+            { id: '7_93', class_grade: '7', title: 'Угроза №1, 2025', file_path: 'img/93.jpg' },
+            { id: '7_94', class_grade: '7', title: 'Он всегда был доволен своей жизнью, 2025', file_path: 'img/94.jpg' },
+            { id: '7_95', class_grade: '7', title: 'На одной планете, 2025', file_path: 'img/95.jpg' },
+            { id: '7_96', class_grade: '7', title: 'Как на ладони, 2025', file_path: 'img/96.jpg' },
+            { id: '7_97', class_grade: '7', title: 'Висят, 2025', file_path: 'img/97.jpg' },
+            { id: '7_98', class_grade: '7', title: '100% фотошоп, 2025', file_path: 'img/98.jpg' },
+            { id: '7_99', class_grade: '7', title: 'Китайский дед мороз, 2025', file_path: 'img/99.jpg' },
+            { id: '7_100', class_grade: '7', title: 'Селфи, 2025', file_path: 'img/100.jpg' },
+            { id: '7_101', class_grade: '7', title: 'Девчонки, 2025', file_path: 'img/101.jpg' },
+            { id: '7_102', class_grade: '7', title: 'ОФлИфНиК, 2025', file_path: 'img/102.jpg' },
+            { id: '7_103', class_grade: '7', title: 'Пов: сидишь на последней парте со зрением -10, 2025', file_path: 'img/103.jpg' },
+            { id: '7_105', class_grade: '7', title: 'йоу, 2025', file_path: 'img/105.jpg' },
+            { id: '7_107', class_grade: '7', title: 'Наш первоклассник, 2025', file_path: 'img/107.jpg' },
+            { id: '7_108', class_grade: '7', title: 'Я честно хз чё тут писать... Шёвик-как Шёвик, 2025', file_path: 'img/108.jpg' },
+            { id: '7_109', class_grade: '7', title: 'Дагистанец, 2025', file_path: 'img/109.jpg' },
+            { id: '7_110', class_grade: '7', title: 'Стартин (1), 2026', file_path: 'img/110.jpg' },
+            { id: '7_111', class_grade: '7', title: 'Стартин (2), 2026', file_path: 'img/111.jpg' },
+            { id: '7_112', class_grade: '7', title: 'Стартин (3), 2026', file_path: 'img/112.jpg' },
+            { id: '7_113', class_grade: '7', title: 'Упал - вставай, вставай - упай, 2026', file_path: 'img/113.jpg' }
+        ].map(item => ({ ...item, author_info: item.author_info || 'Архив 7Б', date: item.date || '2025–2026' }));
+
+        function resolvePhotoUrl(fpath) {
+            if (!fpath) return '';
+            if (fpath.startsWith('http://') || fpath.startsWith('https://')) return fpath;
+            if (fpath.startsWith('/uploads/')) return `${API_URL}${fpath}`;
+            return fpath;
+        }
+
+        async function initPhotos() {
+            try {
+                const res = await fetch(`${API_URL}/api/photos`, { cache: 'no-store' });
+                if (res.ok) {
+                    const serverData = await res.json();
+                    dbPhotos = serverData.map(p => ({
+                        ...p,
+                        class_grade: '8'
+                    }));
+                }
+            } catch (e) {
+                console.warn("Свежие фото 8 класса не подгрузились, показываем архив:", e);
+            }
+
+            combinedPhotos = [...dbPhotos, ...ARCHIVE_PHOTOS];
+
+            const count8 = dbPhotos.length;
+            const count7 = ARCHIVE_PHOTOS.filter(p => p.class_grade === '7').length;
+            const count6 = ARCHIVE_PHOTOS.filter(p => p.class_grade === '6').length;
+
+            const bAll = document.getElementById('badgeCountAll');
+            const b8 = document.getElementById('badgeCount8');
+            const b7 = document.getElementById('badgeCount7');
+            const b6 = document.getElementById('badgeCount6');
+
+            if (bAll) bAll.textContent = combinedPhotos.length;
+            if (b8) b8.textContent = count8;
+            if (b7) b7.textContent = count7;
+            if (b6) b6.textContent = count6;
+
+            renderGrid(combinedPhotos);
+
+            const targetPhotoId = new URLSearchParams(window.location.search).get('id');
+            if (targetPhotoId) {
+                setTimeout(() => openPhotoModal(targetPhotoId), 150);
+            }
+        }
+
+        function switchClassTab(grade, btnEl) {
+            currentTab = grade;
+            document.querySelectorAll('.thebser-tab-btn').forEach(btn => {
+                btn.className = "thebser-tab-btn inactive";
+            });
+
+            if (btnEl) btnEl.className = "thebser-tab-btn active";
+
+            if (grade === 'all') {
+                renderGrid(combinedPhotos);
+            } else {
+                renderGrid(combinedPhotos.filter(p => p.class_grade === grade));
+            }
+        }
+
+        function renderGrid(list) {
+            const grid = document.getElementById('photosGrid');
+            if (!grid) return;
+
+            if (!list || list.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-16 theme-card border rounded-3xl p-8 shadow-sm">
+                        <div class="w-16 h-16 rounded-2xl bg-indigo-500/20 text-indigo-500 flex items-center justify-center mx-auto mb-4 border border-indigo-500/30">
+                            <i class="fas fa-camera text-2xl"></i>
+                        </div>
+                        <h3 class="font-bold text-base mb-1" style="color: var(--text-main) !important;">В этом разделе пока нет фотографий</h3>
+                        <p class="theme-text-muted text-xs max-w-sm mx-auto leading-relaxed">
+                            Снимки появятся здесь после публикации.
+                        </p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = list.map(item => {
+                const fullUrl = resolvePhotoUrl(item.file_path);
+                const classLabel = `${item.class_grade} класс`;
+                const idDisplay = String(item.id).startsWith('6_') || String(item.id).startsWith('7_')
+                    ? `#${item.id.split('_')[1]}`
+                    : `#${item.id}`;
+
+                return `
+                    <div onclick="openPhotoModal('${item.id}')" class="photo-card theme-card border rounded-3xl overflow-hidden shadow-sm flex flex-col justify-between cursor-pointer">
+                        <div class="w-full h-48 bg-gray-100 dark:bg-gray-900 overflow-hidden relative">
+                            <img src="${fullUrl}" loading="lazy" class="w-full h-full object-cover transition duration-300 hover:scale-105" alt="${item.title}">
+                            <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-wider bg-black/60 backdrop-blur-md text-white border border-white/20">
+                                ${classLabel}
+                            </span>
+                        </div>
+                        <div class="p-4 flex flex-col justify-between flex-1">
+                            <h3 class="font-bold text-sm mb-2 leading-snug line-clamp-2" style="color: var(--text-main);">${item.title}</h3>
+                            <div class="flex items-center justify-between text-[11px] theme-text-muted pt-2 border-t border-gray-100 dark:border-gray-800">
+                                <span>${item.author_info === 'Аноним' ? '<i class="fas fa-user-secret text-indigo-400 mr-1"></i>Аноним' : (item.author_info || 'Класс')}</span>
+                                <span class="font-mono text-indigo-500 font-bold">${idDisplay}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function adaptPhotoModalSize() {
+            const modal = document.getElementById('photoModal');
+            if (!modal || modal.style.display === 'none' || !activePhoto) return;
+
+            const imgEl = document.getElementById('modalPhotoImg');
+            const cardEl = document.getElementById('photoModalCard');
+            const headerEl = document.getElementById('modalHeader');
+            const footerEl = document.getElementById('modalFooter');
+
+            if (!imgEl || !cardEl || !imgEl.naturalWidth || !imgEl.naturalHeight) return;
+
+            const vh = window.innerHeight;
+            const vw = window.innerWidth;
+            const isMobile = vw < 640;
+
+            const headerH = headerEl ? headerEl.offsetHeight : 50;
+            const footerH = footerEl ? footerEl.offsetHeight : 45;
+            const cardPaddings = isMobile ? 28 : 40;
+            const screenMargin = isMobile ? 16 : 32;
+
+            const maxImgHeight = Math.max(120, vh - headerH - footerH - cardPaddings - screenMargin);
+            const maxImgWidth = Math.min(vw - (isMobile ? 32 : 64), 980);
+
+            const imgRatio = imgEl.naturalWidth / imgEl.naturalHeight;
+
+            let finalH = maxImgHeight;
+            let finalW = finalH * imgRatio;
+
+            if (finalW > maxImgWidth) {
+                finalW = maxImgWidth;
+                finalH = finalW / imgRatio;
+            }
+
+            imgEl.style.maxHeight = `${Math.floor(finalH)}px`;
+            imgEl.style.maxWidth = `${Math.floor(finalW)}px`;
+
+            const targetCardW = Math.max(Math.floor(finalW) + (isMobile ? 28 : 40), isMobile ? 285 : 340);
+            cardEl.style.width = `${Math.min(targetCardW, vw - (isMobile ? 16 : 32))}px`;
+        }
+
+        function openPhotoModal(photoId) {
+            const photo = combinedPhotos.find(p => String(p.id) === String(photoId));
+            if (!photo) return;
+
+            activePhoto = photo;
+            history.replaceState(null, '', `?id=${photoId}`);
+            const fullUrl = resolvePhotoUrl(photo.file_path);
+
+            const imgEl = document.getElementById('modalPhotoImg');
+            const cardEl = document.getElementById('photoModalCard');
+
+            if (imgEl) {
+                imgEl.style.maxHeight = '';
+                imgEl.style.maxWidth = '';
+                imgEl.onload = function() { adaptPhotoModalSize(); };
+                imgEl.src = fullUrl;
+                if (imgEl.complete && imgEl.naturalWidth) adaptPhotoModalSize();
+            }
+            if (cardEl) cardEl.style.width = '';
+
+            const tEl = document.getElementById('modalPhotoTitle');
+            const bEl = document.getElementById('modalPhotoClassBadge');
+            const aEl = document.getElementById('modalPhotoAuthor');
+            const dEl = document.getElementById('modalPhotoDate');
+            const idEl = document.getElementById('modalPhotoId');
+
+            if (tEl) tEl.textContent = photo.title || 'Без названия';
+            if (bEl) bEl.textContent = `${photo.class_grade} класс`;
+            if (aEl) {
+    if (photo.author_info === 'Аноним') {
+        aEl.innerHTML = '<i class="fas fa-user-secret mr-1"></i>Аноним';
+    } else {
+        aEl.textContent = photo.author_info || 'Класс';
+    }
+}
+            if (dEl) dEl.textContent = `• ${photo.date || photo.created_at || ''}`;
+
+            const idLabel = String(photo.id).startsWith('6_') || String(photo.id).startsWith('7_') 
+                ? `Архив: #${photo.id.split('_')[1]}` 
+                : `ID: #${photo.id}`;
+            if (idEl) idEl.textContent = idLabel;
+
+            const modal = document.getElementById('photoModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closePhotoModal() {
+            const modal = document.getElementById('photoModal');
+            if (modal) modal.style.display = 'none';
+            document.body.style.overflow = '';
+            activePhoto = null;
+            history.replaceState(null, '', window.location.pathname);
+        }
+
+        async function downloadCurrentModalPhoto() {
+            if (!activePhoto) return;
+            const fullUrl = resolvePhotoUrl(activePhoto.file_path);
+            const fname = activePhoto.file_path.split('/').pop() || 'photo.jpg';
+
+            // Находим кнопку скачивания в модалке и включаем индикатор
+            const dlBtn = document.querySelector('#modalFooter button[onclick="downloadCurrentModalPhoto()"]');
+            const origContent = dlBtn ? dlBtn.innerHTML : null;
+            if (dlBtn) {
+                dlBtn.disabled = true;
+                dlBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin text-[11px]"></i> <span>Скачивание...</span>';
+            }
+
+            try {
+                // Получаем файл в виде Blob — для blob-ссылок браузер принудительно открывает диалог сохранения
+                const res = await fetch(fullUrl, { cache: 'no-store' });
+                if (!res.ok) throw new Error();
+                const blob = await res.blob();
+                const blobUrl = URL.createObjectURL(blob);
+
+                const a = document.createElement('a');
+                a.href = blobUrl;
+                a.download = fname;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+
+                // Очищаем ссылку из памяти
+                setTimeout(() => URL.revokeObjectURL(blobUrl), 2000);
+
+                if (dlBtn) {
+                    dlBtn.innerHTML = '<i class="fas fa-check text-[11px] text-green-300"></i> <span>Скачано!</span>';
+                    setTimeout(() => {
+                        dlBtn.disabled = false;
+                        dlBtn.innerHTML = origContent;
+                    }, 1500);
+                }
+            } catch (e) {
+                // Запасной вариант при сбое сети
+                const a = document.createElement('a');
+                a.href = fullUrl;
+                a.setAttribute('download', fname);
+                a.target = '_blank';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+
+                if (dlBtn) {
+                    dlBtn.disabled = false;
+                    dlBtn.innerHTML = origContent;
+                }
+            }
+        }
+
+        async function shareCurrentPhoto(btn) {
+            if (!activePhoto) return;
+            const url = `${window.location.origin}${window.location.pathname}?id=${activePhoto.id}`;
+            const title = activePhoto.title || 'Фотоархив 8Б';
+
+            if (navigator.share) {
+                try {
+                    await navigator.share({ title, text: title, url });
+                    return;
+                } catch (e) {}
+            }
+
+            navigator.clipboard.writeText(url).then(() => {
+                btn.innerHTML = `<i class="fas fa-check text-emerald-500"></i> <span class="text-emerald-500">Скопировано!</span>`;
+                setTimeout(() => {
+                    btn.innerHTML = `<i class="fas fa-share-alt"></i> <span>Поделиться</span>`;
+                }, 2000);
+            });
+        }
+
+        // ============================================================
+        // ОКНО ЖАЛОБЫ (КАК В НОВОСТЯХ С ПЕРЕХОДОМ В БОТА)
+        // ============================================================
+        function openPhotoReportModal() {
+            if (!activePhoto) return;
+
+            // Извлекаем чистый номер ID фото (например, из '7_65' -> 65)
+            const cleanId = String(activePhoto.id).includes('_')
+                ? activePhoto.id.split('_')[1]
+                : activePhoto.id;
+
+            const modal = document.getElementById('photoReportModal');
+            const numEl = document.getElementById('reportModalPhotoNum');
+            const botLink = document.getElementById('reportModalBotLink');
+
+            if (numEl) numEl.textContent = `#${cleanId}`;
+            if (botLink) {
+                botLink.href = `https://t.me/thebser_complaints_bot?start=report_photo_${cleanId}`;
+            }
+
+            if (modal) {
+                modal.style.display = 'flex';
+            }
+        }
+
+        function closePhotoReportModal() {
+            const modal = document.getElementById('photoReportModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' || e.key === 'Esc' || e.keyCode === 27) {
+                const reportModal = document.getElementById('photoReportModal');
+                if (reportModal && reportModal.style.display !== 'none') {
+                    closePhotoReportModal();
+                } else {
+                    closePhotoModal();
+                }
+            }
+        });
+
+        window.addEventListener('resize', adaptPhotoModalSize);
+        window.addEventListener('orientationchange', () => setTimeout(adaptPhotoModalSize, 120));
+
+        document.addEventListener('DOMContentLoaded', initPhotos);
+    </script>
+</body>
+</html>

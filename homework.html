@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>theBser — Домашние задания 8Б</title>
+
+
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=111460868', 'ym');
+
+    ym(111460868, 'init', {ssr:true, webvisor:true, clickmap:true, referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/111460868" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+
+
+
+
+    <script>
+        const initialTheme = localStorage.getItem('thebser_theme') || 'light';
+        if (initialTheme === 'dark') {
+            document.documentElement.classList.add('dark-theme');
+        } else {
+            document.documentElement.classList.remove('dark-theme');
+        }
+    </script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="thebser-core.css">
+
+    <style>
+        .hw-card {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        .hw-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 30px var(--shadow-color);
+            border-color: var(--primary) !important;
+        }
+        .hw-input {
+            background-color: var(--input-bg) !important;
+            border-color: var(--card-border) !important;
+            color: var(--text-main) !important;
+        }
+        .hw-input:focus {
+            outline: none;
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        /* Обрезка длинного текста карточек с троеточием (...) */
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+</head>
+<body class="p-3 sm:p-6 md:p-10">
+
+    <div class="max-w-4xl mx-auto">
+        <!-- ШАПКА -->
+        <header class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-6 mb-6 border-b gap-4" style="border-color: var(--card-border) !important;">
+            <div class="flex items-center gap-3">
+                <a href="index.html" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-2xl theme-card border hover:border-indigo-500 font-semibold text-xs transition shadow-sm">
+                    <i class="fas fa-arrow-left text-indigo-500"></i>
+                    <span>На главную</span>
+                </a>
+                <div class="h-6 w-[1px] bg-gray-300 dark:bg-gray-700 hidden sm:block"></div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-black leading-tight flex items-center gap-2" style="color: var(--text-main) !important;">
+                        <span>Домашние задания</span>
+                        <span class="text-xs px-2 py-0.5 rounded-lg bg-indigo-500/20 text-indigo-400 font-bold uppercase tracking-wider">8Б</span>
+                    </h1>
+                    <p class="theme-text-muted text-xs">Актуальные задания, сроки сдачи и материалы к урокам</p>
+                </div>
+            </div>
+
+            <button onclick="refreshHomework()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-md">
+                <i class="fas fa-sync-alt" id="refreshIcon"></i>
+                <span>Обновить</span>
+            </button>
+        </header>
+
+        <!-- ПАНЕЛЬ ВЫБОРА РЕЖИМА И ПОИСКА -->
+        <div class="theme-card border rounded-3xl p-3.5 sm:p-5 shadow-sm mb-6">
+            <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+                
+                <!-- Кнопки выбора режима (стиль как в расписании) -->
+<div class="inline-flex items-center gap-1.5 p-1 rounded-2xl bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-xs font-bold self-start overflow-x-auto max-w-full">
+    <button id="btnModeToday" onclick="setMode('today')" class="thebser-tab-btn active">Сегодня</button>
+    <button id="btnModeTomorrow" onclick="setMode('tomorrow')" class="thebser-tab-btn inactive">Завтра</button>
+    <button id="btnModeDate" onclick="setMode('date')" class="thebser-tab-btn inactive">Число</button>
+    <button id="btnModeAll" onclick="setMode('all')" class="thebser-tab-btn inactive">Все активные</button>
+</div>
+
+                <!-- Поиск, календарь и счетчик -->
+                <div class="flex flex-wrap items-center gap-2 justify-end">
+                    <!-- Календарь TheBser -->
+                    <div id="datePickerWrapper" class="hidden relative w-full sm:w-auto">
+                        <button type="button" id="hwCalendarToggleBtn" onclick="toggleCustomCalendar(event)" class="hw-input border px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center justify-between gap-2.5 w-full sm:w-auto shadow-sm transition hover:border-indigo-500">
+                            <span class="flex items-center gap-2">
+                                <i class="far fa-calendar-alt text-indigo-500"></i>
+                                <span id="hwCalendarBtnLabel">Выберите дату</span>
+                            </span>
+                            <i class="fas fa-chevron-down text-[10px] theme-text-muted transition duration-200" id="hwCalendarChevron"></i>
+                        </button>
+                        <input type="hidden" id="hwDatePicker" value="">
+
+                        <!-- Выпадающий календарь -->
+                        <div id="hwCustomCalendar" onclick="event.stopPropagation()" class="hidden absolute top-full left-0 sm:left-auto sm:right-0 mt-2 z-50 theme-card border rounded-3xl p-4 shadow-2xl w-72 backdrop-blur-xl select-none animate-fadeIn">
+                            <div class="flex items-center justify-between mb-3 pb-2 border-b border-gray-100 dark:border-gray-800">
+                                <button type="button" onclick="navigateCalMonth(-1)" class="w-8 h-8 rounded-xl flex items-center justify-center theme-card border hover:border-indigo-500 text-xs text-indigo-500 transition shadow-2xs">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <span id="calMonthYearTitle" class="text-xs font-black capitalize" style="color: var(--text-main);">Сентябрь 2026</span>
+                                <button type="button" onclick="navigateCalMonth(1)" class="w-8 h-8 rounded-xl flex items-center justify-center theme-card border hover:border-indigo-500 text-xs text-indigo-500 transition shadow-2xs">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+
+                            <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold theme-text-muted mb-1.5 uppercase">
+                                <span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span class="text-indigo-400">Сб</span><span class="text-indigo-400">Вс</span>
+                            </div>
+
+                            <div id="calDaysGrid" class="grid grid-cols-7 gap-1 text-xs font-semibold text-center mb-3"></div>
+
+                            <div class="pt-2 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                                <button type="button" onclick="pickCalToday()" class="text-[11px] font-bold text-indigo-500 hover:underline">Сегодня</button>
+                                <button type="button" onclick="closeCustomCalendar()" class="text-[11px] theme-text-muted hover:text-red-500">Закрыть</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Выбор предмета -->
+                    <div id="subjectPickerWrapper" class="hidden flex items-center gap-2 w-full sm:w-auto">
+                        <select id="hwSubjectSelect" onchange="onSubjectChanged()" class="hw-input border px-3 py-1.5 rounded-xl text-xs font-semibold w-full sm:w-52 cursor-pointer">
+                            <option value="">Все предметы</option>
+                            <option value="Алгебра">Алгебра</option>
+                            <option value="Геометрия">Геометрия</option>
+                            <option value="Вероятность и статистика">Вероятность и статистика</option>
+                            <option value="Русский язык">Русский язык</option>
+                            <option value="Литература">Литература</option>
+                            <option value="Физика">Физика</option>
+                            <option value="Химия">Химия</option>
+                            <option value="Биология">Биология</option>
+                            <option value="География">География</option>
+                            <option value="История">История</option>
+                            <option value="Информатика">Информатика</option>
+                            <option value="Английский язык">Английский язык</option>
+                            <option value="ОБЗР">ОБЗР</option>
+                            <option value="Технология">Технология</option>
+                            <option value="Физкультура">Физкультура</option>
+                            <option value="Музыка">Музыка</option>
+                        </select>
+                    </div>
+
+                    <!-- Поиск ID -->
+                    <div class="flex items-center gap-1.5">
+                        <div class="relative w-32 sm:w-36">
+                            <input type="number" id="searchIdInput" placeholder="Поиск #ID..." onkeydown="if(event.key==='Enter') searchHwById()" class="hw-input border px-3 py-1.5 rounded-xl text-xs font-mono font-semibold w-full">
+                        </div>
+                        <button onclick="searchHwById()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-sm cursor-pointer">
+                            <i class="fas fa-search text-[10px]"></i>
+                            <span>Найти</span>
+                        </button>
+                    </div>
+
+                    <!-- Счётчик найдено -->
+                    <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl border border-gray-200 dark:border-gray-800 text-xs font-medium theme-text-muted">
+                        <i class="fas fa-tasks text-indigo-500"></i>
+                        <span id="hwCountLabel">Найдено: 0</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- КАРТОЧКИ ЗАДАНИЙ (2 КОЛОНКИ ВМЕСТО 3 ДЛЯ ПЛОТНОГО СТИЛЯ) -->
+        <main id="hwContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4 pb-12">
+            <div class="col-span-full text-center py-20">
+                <i class="fas fa-circle-notch fa-spin text-3xl text-indigo-500 mb-3"></i>
+                <p class="theme-text-muted text-sm font-medium">Запрос к серверу...</p>
+            </div>
+        </main>
+
+        <!-- ЕДИНЫЙ ПОДВАЛ -->
+        <footer class="mt-20 text-center py-6 border-t theme-card" style="background: transparent !important; border-color: var(--card-border) !important;">
+            <p class="text-sm font-medium theme-text-muted">by Maxlic12 & Cloudflare Pages & Cloudflare tunel & Uvicorn & Google Gemini| theBser (v2.0)</p>
+        </footer>
+    </div>
+
+    <!-- 1. ПОЛНОРАЗМЕРНОЕ ОКНО ПРОСМОТРА ЗАДАНИЯ -->
+    <div id="hwModal" onclick="closeHwModal()" style="display: none;" class="fixed inset-0 modal-blur-backdrop z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+        <div onclick="event.stopPropagation()" class="modal-dialog-zoom theme-card border rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl p-5 sm:p-7 relative flex flex-col justify-between">
+            <div>
+                <div id="modalSubjectBar" class="h-2 -mx-5 -mt-5 sm:-mx-7 sm:-mt-7 mb-5 bar-default rounded-t-3xl"></div>
+
+                <div class="flex items-start justify-between gap-3 mb-4">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span id="modalSubjectBadge" class="text-xs font-black uppercase tracking-wider text-indigo-500">Предмет</span>
+                            <span id="modalTeacherBadge" class="text-xs theme-text-muted font-medium">• Учитель</span>
+                        </div>
+                        <h2 id="modalTitle" class="text-xl sm:text-2xl font-black mt-1 leading-snug">Заголовок задания</h2>
+                    </div>
+                    <button onclick="closeHwModal()" class="theme-text-muted hover:text-red-500 text-3xl font-light leading-none p-1">&times;</button>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2 mb-5">
+                    <span id="modalDueDateBadge" class="thebser-badge badge-status-blue">
+                        <i class="far fa-calendar-alt text-[10px]"></i>
+                        <span>Задано на урок</span>
+                    </span>
+                    <span id="modalStatusBadge" class="thebser-badge badge-status-green">
+                        <i class="fas fa-check-circle text-[10px]"></i>
+                        <span>Можно сдать</span>
+                    </span>
+                </div>
+
+                <div class="theme-card border p-4 sm:p-5 rounded-2xl mb-5">
+                    <h4 class="text-xs font-bold uppercase tracking-wider theme-text-muted mb-2">Что нужно сделать:</h4>
+                    <p id="modalDescription" class="text-sm font-medium leading-relaxed whitespace-pre-wrap break-words"></p>
+                </div>
+
+                <div id="modalMediaSection" class="hidden mb-5">
+                    <h4 class="text-xs font-bold uppercase tracking-wider theme-text-muted mb-3 flex items-center gap-1.5">
+                        <i class="fas fa-paperclip text-indigo-500"></i>
+                        <span>Прикреплённые материалы:</span>
+                    </h4>
+                    <div id="modalMediaContainer" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
+                </div>
+
+                <div id="modalLinksSection" class="hidden mb-5">
+                    <h4 class="text-xs font-bold uppercase tracking-wider theme-text-muted mb-3 flex items-center gap-1.5">
+                        <i class="fas fa-link text-indigo-500"></i>
+                        <span>Полезные ссылки:</span>
+                    </h4>
+                    <div id="modalLinksContainer" class="flex flex-col gap-2"></div>
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-gray-100 dark:border-gray-800 flex flex-col sm:flex-row items-start sm:items-center justify-between text-xs theme-text-muted gap-2">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <span id="modalCreatedAt">Добавлено: --</span>
+                    <span id="modalUpdatedAt" class="text-indigo-500 font-semibold"></span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button type="button" id="hwShareBtn" onclick="shareCurrentHw(this)" class="px-2.5 py-1 rounded-lg border border-indigo-500/30 hover:border-indigo-500 text-indigo-500 font-bold transition flex items-center gap-1.5 text-[11px] cursor-pointer">
+                        <i class="fas fa-share-alt"></i>
+                        <span>Поделиться</span>
+                    </button>
+                    <span id="modalTaskId" class="font-mono font-bold px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-indigo-500">ID: #0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. LIGHTBOX ДЛЯ ФОТО -->
+    <div id="photoViewerModal" style="display: none;" class="fixed inset-0 modal-blur-backdrop z-50 flex flex-col items-center justify-between p-4">
+        <div class="w-full flex items-center justify-between max-w-5xl z-20 py-2">
+            <span id="viewerCounter" class="text-xs font-mono font-bold text-white bg-white/10 px-3 py-1.5 rounded-xl">1 из 1</span>
+            <div class="flex items-center gap-3">
+                <button onclick="downloadActivePhoto(event)" class="px-3.5 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold flex items-center gap-1.5 transition">
+                    <i class="fas fa-download text-xs"></i>
+                    <span>Скачать фото</span>
+                </button>
+                <button onclick="closePhotoViewer()" class="text-white hover:text-red-400 text-3xl font-light leading-none p-1">&times;</button>
+            </div>
+        </div>
+
+        <div id="viewerImgWrapper" class="relative w-full max-w-5xl flex-1 flex items-center justify-center overflow-hidden my-auto cursor-pointer">
+            <button id="viewerPrevBtn" onclick="event.stopPropagation(); navigatePhoto(-1)" class="absolute left-2 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center text-lg z-30 transition border border-white/20">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <img id="viewerImage" src="" alt="Просмотр фото" class="max-h-[82vh] max-w-full object-contain rounded-2xl shadow-2xl transition duration-200 cursor-default" onclick="event.stopPropagation()">
+            <button id="viewerNextBtn" onclick="event.stopPropagation(); navigatePhoto(1)" class="absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center text-lg z-30 transition border border-white/20">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+        <div class="text-[11px] text-gray-400 py-2 pointer-events-none">Нажмите Escape или кликните по фону для выхода</div>
+    </div>
+
+    <!-- 3. ОКНО СКАЧИВАНИЯ НЕ-ФОТО ФАЙЛОВ -->
+    <div id="fileDownloadModal" style="display: none;" class="fixed inset-0 modal-blur-backdrop z-50 flex items-center justify-center p-4">
+        <div class="modal-dialog-zoom theme-card border rounded-3xl max-w-md w-full p-6 shadow-2xl text-center" onclick="event.stopPropagation()">
+            <div class="w-16 h-16 rounded-2xl bg-indigo-500 bg-opacity-20 text-indigo-500 flex items-center justify-center text-3xl mx-auto mb-4">
+                <i class="fas fa-file-download" id="fileDialogIcon"></i>
+            </div>
+            <h3 class="text-lg font-bold mb-1">Этот файл нельзя тут просмотреть</h3>
+            <p class="theme-text-muted text-xs leading-relaxed mb-4">
+                Но вы можете сохранить его на своё устройство.
+            </p>
+            <div class="p-3 rounded-2xl border mb-5 font-mono text-xs truncate" style="background-color: var(--input-bg);" id="fileDialogName">
+                file.docx
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="closeFileDialog()" class="flex-1 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 text-xs font-bold transition">Отмена</button>
+                <button id="fileDialogDownloadBtn" onclick="downloadCurrentDialogFile()" class="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition shadow-md">
+                    <i class="fas fa-download text-xs"></i>
+                    <span>Скачать</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://api.thebservices.online";
+        let activeMode = 'today';
+        let selectedDate = getFormattedDate(new Date());
+        let selectedSubject = '';
+        let currentLoadedTasks = [];
+
+        let currentGalleryPhotos = [];
+        let currentPhotoIndex = 0;
+        let currentFileDownloadRelativePath = "";
+        let currentFileDownloadName = "";
+
+        function triggerServerDownload(relativePath, filename) {
+            const url = `${API_URL}/api/download?file_path=${encodeURIComponent(relativePath)}`;
+            const a = document.createElement('a');
+            a.href = url;
+            a.setAttribute('download', filename || relativePath.split('/').pop() || 'download');
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        function getFormattedDate(d) {
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // ТОЧНОЕ СОПОСТАВЛЕНИЕ ВСЕХ 16 ПРЕДМЕТОВ С ИХ ПОЛОСАМИ
+        function getSubjectBarClass(subj) {
+            const s = (subj || '').toLowerCase();
+            if (s.includes('алгебр')) return 'bar-algebra';
+            if (s.includes('геометр')) return 'bar-geometry';
+            if (s.includes('вероятност')) return 'bar-probability';
+            if (s.includes('русск')) return 'bar-russian';
+            if (s.includes('литер')) return 'bar-literature';
+            if (s.includes('физик')) return 'bar-physics';
+            if (s.includes('хими')) return 'bar-chemistry';
+            if (s.includes('биолог')) return 'bar-biology';
+            if (s.includes('геогр')) return 'bar-geography';
+            if (s.includes('истор')) return 'bar-history';
+            if (s.includes('информ')) return 'bar-informatics';
+            if (s.includes('англ')) return 'bar-english';
+            if (s.includes('обзр')) return 'bar-obzr';
+            if (s.includes('технолог')) return 'bar-technology';
+            if (s.includes('физкульт')) return 'bar-pe';
+            if (s.includes('музык')) return 'bar-music';
+            return 'bar-default';
+        }
+
+        // ===== ЛОГИКА ФИРМЕННОГО КАЛЕНДАРЯ THEBSER =====
+        const MONTH_NAMES_RU = [
+            'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+            'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
+        ];
+        const MONTH_GENITIVE_RU = [
+            'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+            'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'
+        ];
+
+        let calCurrentYear = new Date().getFullYear();
+        let calCurrentMonth = new Date().getMonth();
+
+        function formatDisplayDate(dateStr) {
+            const [y, m, d] = dateStr.split('-').map(Number);
+            return `${d} ${MONTH_GENITIVE_RU[m - 1]} ${y}`;
+        }
+
+        function toggleCustomCalendar(e) {
+            if (e) e.stopPropagation();
+            const popup = document.getElementById('hwCustomCalendar');
+            const chevron = document.getElementById('hwCalendarChevron');
+            if (!popup) return;
+
+            const isClosed = popup.classList.contains('hidden');
+            if (isClosed) {
+                // Синхронизируем открываемый месяц с текущей выбранной датой
+                const [y, m] = selectedDate.split('-').map(Number);
+                calCurrentYear = y;
+                calCurrentMonth = m - 1;
+                renderCalendarDays();
+                popup.classList.remove('hidden');
+                if (chevron) chevron.style.transform = 'rotate(180deg)';
+            } else {
+                closeCustomCalendar();
+            }
+        }
+
+        function closeCustomCalendar() {
+            const popup = document.getElementById('hwCustomCalendar');
+            const chevron = document.getElementById('hwCalendarChevron');
+            if (popup) popup.classList.add('hidden');
+            if (chevron) chevron.style.transform = 'none';
+        }
+
+        function navigateCalMonth(delta) {
+            calCurrentMonth += delta;
+            if (calCurrentMonth < 0) {
+                calCurrentMonth = 11;
+                calCurrentYear--;
+            } else if (calCurrentMonth > 11) {
+                calCurrentMonth = 0;
+                calCurrentYear++;
+            }
+            renderCalendarDays();
+        }
+
+        function renderCalendarDays() {
+            const titleEl = document.getElementById('calMonthYearTitle');
+            const gridEl = document.getElementById('calDaysGrid');
+            if (titleEl) titleEl.textContent = `${MONTH_NAMES_RU[calCurrentMonth]} ${calCurrentYear}`;
+            if (!gridEl) return;
+
+            const firstDay = new Date(calCurrentYear, calCurrentMonth, 1).getDay();
+            // Сдвиг для понедельника: 0 - Пн, 6 - Вс
+            const shift = (firstDay + 6) % 7;
+            const daysInMonth = new Date(calCurrentYear, calCurrentMonth + 1, 0).getDate();
+            const daysInPrevMonth = new Date(calCurrentYear, calCurrentMonth, 0).getDate();
+
+            const today = new Date();
+            const todayStr = getFormattedDate(today);
+
+            let html = '';
+
+            // Дни предыдущего месяца (серые)
+            for (let i = shift - 1; i >= 0; i--) {
+                const dayNum = daysInPrevMonth - i;
+                html += `<span class="p-2 text-gray-300 dark:text-gray-700 pointer-events-none">${dayNum}</span>`;
+            }
+
+            // Дни текущего месяца
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayStr = String(day).padStart(2, '0');
+                const monthStr = String(calCurrentMonth + 1).padStart(2, '0');
+                const fullDate = `${calCurrentYear}-${monthStr}-${dayStr}`;
+
+                const isSelected = (fullDate === selectedDate);
+                const isToday = (fullDate === todayStr);
+
+                let dayClass = "w-8 h-8 mx-auto flex items-center justify-center rounded-xl cursor-pointer transition text-xs";
+
+                if (isSelected) {
+                    dayClass += " bg-indigo-600 text-white font-bold shadow-md shadow-indigo-500/30";
+                } else if (isToday) {
+                    dayClass += " border-2 border-indigo-500 text-indigo-500 font-bold hover:bg-indigo-500/10";
+                } else {
+                    dayClass += " hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200";
+                }
+
+                html += `<button type="button" onclick="selectCalendarDate('${fullDate}')" class="${dayClass}">${day}</button>`;
+            }
+
+            gridEl.innerHTML = html;
+        }
+
+        function selectCalendarDate(dateStr) {
+            selectedDate = dateStr;
+            const hiddenInput = document.getElementById('hwDatePicker');
+            const label = document.getElementById('hwCalendarBtnLabel');
+
+            if (hiddenInput) hiddenInput.value = dateStr;
+            if (label) label.textContent = formatDisplayDate(dateStr);
+
+            closeCustomCalendar();
+            loadHomework({ date: selectedDate });
+        }
+
+        function pickCalToday() {
+            selectCalendarDate(getFormattedDate(new Date()));
+        }
+
+        // Закрытие календаря при клике в любое место страницы
+        document.addEventListener('click', (e) => {
+            const wrapper = document.getElementById('datePickerWrapper');
+            if (wrapper && !wrapper.contains(e.target)) {
+                closeCustomCalendar();
+            }
+        });
+
+        function setMode(mode) {
+    activeMode = mode;
+    const modes = ['today', 'tomorrow', 'date', 'all'];
+
+    modes.forEach(m => {
+        const btn = document.getElementById('btnMode' + capitalize(m));
+        if (btn) {
+            btn.className = (m === mode) ? "thebser-tab-btn active" : "thebser-tab-btn inactive";
+        }
+    });
+
+    const datePicker = document.getElementById('datePickerWrapper');
+    const subjectPicker = document.getElementById('subjectPickerWrapper');
+
+    if (datePicker) datePicker.classList.add('hidden');
+    if (subjectPicker) subjectPicker.classList.add('hidden');
+
+    const now = new Date();
+
+    if (mode === 'today') {
+        selectedDate = getFormattedDate(now);
+        loadHomework({ date: selectedDate });
+    } else if (mode === 'tomorrow') {
+        const tomorrow = new Date(now);
+        tomorrow.setDate(now.getDate() + 1);
+        selectedDate = getFormattedDate(tomorrow);
+        loadHomework({ date: selectedDate });
+    } else if (mode === 'date') {
+        if (datePicker) datePicker.classList.remove('hidden');
+        const hwDatePicker = document.getElementById('hwDatePicker');
+        if (hwDatePicker) hwDatePicker.value = selectedDate;
+        loadHomework({ date: selectedDate });
+    } else if (mode === 'all') {
+        if (subjectPicker) subjectPicker.classList.remove('hidden');
+        loadHomework({ scope: 'all', subject: selectedSubject });
+    }
+}
+
+        function capitalize(s) {
+            return s.charAt(0).toUpperCase() + s.slice(1);
+        }
+
+        function onDateChanged() {
+            const val = document.getElementById('hwDatePicker').value;
+            if (val) {
+                selectedDate = val;
+                loadHomework({ date: selectedDate });
+            }
+        }
+
+        function onSubjectChanged() {
+            selectedSubject = document.getElementById('hwSubjectSelect').value;
+            loadHomework({ scope: 'all', subject: selectedSubject });
+        }
+
+        function refreshHomework() {
+            const icon = document.getElementById('refreshIcon');
+            if (icon) icon.classList.add('fa-spin');
+            setMode(activeMode);
+            setTimeout(() => {
+                if (icon) icon.classList.remove('fa-spin');
+            }, 600);
+        }
+
+        async function loadHomework(params = {}) {
+            const container = document.getElementById('hwContainer');
+            if (!container) return [];
+
+            container.innerHTML = `
+                <div class="col-span-full text-center py-20">
+                    <i class="fas fa-circle-notch fa-spin text-3xl text-indigo-500 mb-3"></i>
+                    <p class="theme-text-muted text-sm font-medium">Запрос к серверу...</p>
+                </div>
+            `;
+
+            let query = [];
+            if (params.date) query.push(`date=${encodeURIComponent(params.date)}`);
+            if (params.subject) query.push(`subject=${encodeURIComponent(params.subject)}`);
+            if (params.scope) query.push(`scope=${encodeURIComponent(params.scope)}`);
+
+            const url = `${API_URL}/api/homework${query.length ? '?' + query.join('&') : ''}`;
+
+            try {
+                const res = await fetch(url, { cache: 'no-store' });
+                if (!res.ok) throw new Error();
+                currentLoadedTasks = await res.json();
+
+                const countLabel = document.getElementById('hwCountLabel');
+                if (countLabel) countLabel.textContent = `Найдено: ${currentLoadedTasks.length}`;
+
+                if (!currentLoadedTasks || currentLoadedTasks.length === 0) {
+                    renderEmptyState();
+                    return [];
+                }
+
+                container.innerHTML = currentLoadedTasks.map(item => renderHwCard(item)).join('');
+                return currentLoadedTasks;
+
+            } catch (err) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-16 theme-card border rounded-3xl p-6 shadow-sm">
+                        <i class="fas fa-exclamation-triangle text-amber-500 text-3xl mb-3"></i>
+                        <h3 class="font-bold text-base mb-1" style="color: var(--text-main) !important;">Не удалось получить задания</h3>
+                        <p class="theme-text-muted text-xs">Проверьте соединение с сервером theBser.</p>
+                    </div>
+                `;
+                return [];
+            }
+        }
+
+        function renderEmptyState() {
+            const container = document.getElementById('hwContainer');
+            const countLabel = document.getElementById('hwCountLabel');
+            if (countLabel) countLabel.textContent = 'Найдено: 0';
+
+            if (!container) return;
+            container.innerHTML = `
+                <div class="col-span-full text-center py-16 theme-card border rounded-3xl p-8 shadow-sm">
+                    <div class="w-16 h-16 rounded-2xl bg-indigo-500 bg-opacity-20 text-indigo-500 flex items-center justify-center mx-auto mb-4 border border-indigo-500/30">
+                        <i class="fas fa-tasks text-2xl text-indigo-500"></i>
+                    </div>
+                    <h3 class="font-bold text-base mb-1" style="color: var(--text-main) !important;">Заданий нет</h3>
+                    <p class="theme-text-muted text-xs max-w-sm mx-auto leading-relaxed">
+                        На выбранный день домашние задания не найдены.
+                    </p>
+                </div>
+            `;
+        }
+
+        function renderHwCard(item) {
+            const barClass = getSubjectBarClass(item.subject);
+            // Яркие контрастные статусы сдачи
+            const statusHtml = item.is_overdue
+                ? `<span class="thebser-badge badge-status-amber"><i class="fas fa-clock text-[9px]"></i> Можно было сдать до ${item.formatted_due_date || item.due_date}</span>`
+                : `<span class="thebser-badge badge-status-green"><i class="fas fa-check-circle text-[9px]"></i> Можно сдать до ${item.formatted_due_date || item.due_date}</span>`;
+
+            const hasMedia = item.media_files && item.media_files.length > 0;
+            const hasLinks = item.links && item.links.length > 0;
+
+            return `
+                <div onclick="openHwModal(${item.id})" class="hw-card theme-card border rounded-3xl p-5 shadow-xs flex flex-col justify-between relative overflow-hidden">
+                    <div>
+                        <div class="h-1.5 -mx-5 -mt-5 mb-4 ${barClass}"></div>
+                        <div class="flex items-start justify-between gap-2 mb-1.5">
+                            <span class="text-xs font-black uppercase tracking-wider text-indigo-500 truncate">${item.subject}</span>
+                            <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-xl bg-gray-100 dark:bg-gray-800 theme-text-muted flex-shrink-0">
+                                Задано на: ${item.formatted_target_date || item.target_date}
+                            </span>
+                        </div>
+                        <div class="text-[11px] theme-text-muted mb-2 font-medium truncate flex items-center justify-between">
+                            <span><i class="fas fa-chalkboard-teacher mr-1"></i>${item.teacher || 'Учитель'}</span>
+                        </div>
+                        <h3 class="font-bold text-sm sm:text-base leading-snug mb-2 line-clamp-2" style="color: var(--text-main);" title="${item.title}">${item.title}</h3>
+                        <p class="text-xs theme-text-muted leading-relaxed line-clamp-3 mb-4">${item.description}</p>
+                    </div>
+
+                    <div class="pt-3 border-t border-gray-100 dark:border-gray-800 flex flex-col gap-2.5">
+                        <div>${statusHtml}</div>
+                        <div class="flex items-center justify-between text-xs theme-text-muted">
+                            <div class="flex items-center gap-3">
+                                ${hasMedia ? `<span class="text-[11px] font-medium flex items-center gap-1.5"><i class="fas fa-paperclip text-indigo-400"></i> ${item.media_files.length}</span>` : ''}
+                                ${hasLinks ? `<span class="text-[11px] font-medium flex items-center gap-1.5"><i class="fas fa-link text-indigo-400"></i> ${item.links.length}</span>` : ''}
+                            </div>
+                            <span class="font-mono text-[11px] font-bold px-2 py-0.5 rounded-lg bg-gray-100 dark:bg-gray-800 text-indigo-400 border border-gray-200 dark:border-gray-700/60 shadow-xs">
+                                ID: #${item.id}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function openHwModal(taskId) {
+            const task = currentLoadedTasks.find(t => t.id === taskId);
+            if (!task) return;
+
+            activeModalHwTask = task; // Включаем кнопку «Поделиться»
+            history.replaceState(null, '', `?id=${task.id}`); // Синхронизируем URL для QR-кодов
+
+            const modal = document.getElementById('hwModal');
+            if (!modal) return;
+
+            document.getElementById('modalSubjectBar').className = `h-2 -mx-5 -mt-5 sm:-mx-7 sm:-mt-7 mb-5 ${getSubjectBarClass(task.subject)} rounded-t-3xl`;
+            document.getElementById('modalSubjectBadge').textContent = task.subject;
+            document.getElementById('modalTeacherBadge').textContent = `• ${task.teacher || 'Учитель'}`;
+            document.getElementById('modalTitle').textContent = task.title;
+            document.getElementById('modalDueDateBadge').textContent = `Срок сдачи: до ${task.formatted_due_date || task.due_date}`;
+            document.getElementById('modalDescription').textContent = task.description;
+            document.getElementById('modalCreatedAt').textContent = `Опубликовано: ${task.created_at || '--'}`;
+            document.getElementById('modalUpdatedAt').textContent = task.updated_at ? `(Изм.: ${task.updated_at})` : '';
+            document.getElementById('modalTaskId').textContent = `ID задания: #${task.id}`;
+
+            // Статус сдачи: сочный зелёный или янтарный с иконкой
+            const statusBadge = document.getElementById('modalStatusBadge');
+            if (task.is_overdue) {
+                statusBadge.className = "thebser-badge badge-status-amber";
+                statusBadge.innerHTML = `<i class="fas fa-clock text-[10px]"></i> Срок сдачи истёк`;
+            } else {
+                statusBadge.className = "thebser-badge badge-status-green";
+                statusBadge.innerHTML = `<i class="fas fa-check-circle text-[10px]"></i> Можно сдать`;
+            }
+
+            // Бейдж даты урока
+            const dueDateBadge = document.getElementById('modalDueDateBadge');
+            if (dueDateBadge) {
+                dueDateBadge.className = "thebser-badge badge-status-blue";
+                dueDateBadge.innerHTML = `<i class="far fa-calendar-alt text-[10px]"></i> Задано на: ${task.formatted_target_date || task.target_date}`;
+            }
+
+            const mediaSec = document.getElementById('modalMediaSection');
+            const mediaCont = document.getElementById('modalMediaContainer');
+            if (task.media_files && task.media_files.length > 0) {
+                mediaSec.classList.remove('hidden');
+                const imageFiles = task.media_files.filter(f => f.match(/\.(jpg|jpeg|png|webp)$/i));
+
+                mediaCont.innerHTML = task.media_files.map(filePath => {
+                    const fullUrl = `${API_URL}${filePath}`;
+                    const isImg = filePath.match(/\.(jpg|jpeg|png|webp)$/i);
+                    const fileName = filePath.split('/').pop();
+
+                    if (isImg) {
+                        const imgIdx = imageFiles.indexOf(filePath);
+                        return `
+                            <div onclick="openPhotoViewerFromTask(${task.id}, ${imgIdx})" class="block rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800 hover:opacity-90 transition cursor-pointer relative group">
+                                <img src="${fullUrl}" class="w-full h-24 object-cover" alt="Медиа">
+                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition text-xs font-bold">
+                                    <i class="fas fa-search-plus mr-1"></i> Просмотр
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        const isAudio = filePath.match(/\.(mp3|wav|ogg|m4a)$/i);
+                        const iconClass = isAudio ? 'fa-music text-purple-500' : 'fa-file-alt text-indigo-500';
+                        return `
+                            <div onclick="openFileDialog('${filePath}', '${fileName}', '${iconClass}')" class="flex items-center gap-2 p-3 rounded-xl border border-gray-200 dark:border-gray-800 theme-card text-xs font-semibold hover:border-indigo-500 transition truncate cursor-pointer">
+                                <i class="fas ${iconClass} text-lg flex-shrink-0"></i>
+                                <span class="truncate flex-1">${fileName}</span>
+                            </div>
+                        `;
+                    }
+                }).join('');
+            } else {
+                mediaSec.classList.add('hidden');
+            }
+
+            const linksSec = document.getElementById('modalLinksSection');
+            const linksCont = document.getElementById('modalLinksContainer');
+            if (task.links && task.links.length > 0) {
+                linksSec.classList.remove('hidden');
+                linksCont.innerHTML = task.links.map(l => `
+                    <a href="${l.url}" target="_blank" class="flex items-center justify-between p-3 rounded-xl border border-gray-200 dark:border-gray-800 theme-card text-xs font-semibold hover:border-indigo-500 transition group">
+                        <span class="flex items-center gap-2 truncate">
+                            <i class="fas fa-external-link-alt text-indigo-500 text-[11px]"></i>
+                            <span class="group-hover:text-indigo-500 transition truncate">${l.title}</span>
+                        </span>
+                        <span class="text-[10px] theme-text-muted truncate ml-2 font-mono">${l.url.replace(/^https?:\/\//, '')}</span>
+                    </a>
+                `).join('');
+            } else {
+                linksSec.classList.add('hidden');
+            }
+
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeHwModal() {
+            const modal = document.getElementById('hwModal');
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+            activeModalHwTask = null;
+            history.replaceState(null, '', window.location.pathname);
+        }
+
+        function openPhotoViewerFromTask(taskId, imgIndex) {
+            const task = currentLoadedTasks.find(t => t.id === taskId);
+            if (!task) return;
+
+            currentGalleryPhotos = task.media_files.filter(f => f.match(/\.(jpg|jpeg|png|webp)$/i));
+            currentPhotoIndex = imgIndex >= 0 ? imgIndex : 0;
+            updatePhotoViewer();
+
+            const modal = document.getElementById('photoViewerModal');
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function updatePhotoViewer() {
+            if (currentGalleryPhotos.length === 0) return;
+            const fullUrl = `${API_URL}${currentGalleryPhotos[currentPhotoIndex]}`;
+
+            document.getElementById('viewerImage').src = fullUrl;
+            document.getElementById('viewerCounter').textContent = `${currentPhotoIndex + 1} из ${currentGalleryPhotos.length}`;
+
+            const prevBtn = document.getElementById('viewerPrevBtn');
+            const nextBtn = document.getElementById('viewerNextBtn');
+
+            if (currentGalleryPhotos.length <= 1) {
+                prevBtn.classList.add('hidden');
+                nextBtn.classList.add('hidden');
+            } else {
+                prevBtn.classList.remove('hidden');
+                nextBtn.classList.remove('hidden');
+                prevBtn.disabled = (currentPhotoIndex === 0);
+                nextBtn.disabled = (currentPhotoIndex === currentGalleryPhotos.length - 1);
+            }
+        }
+
+        function navigatePhoto(delta) {
+            const next = currentPhotoIndex + delta;
+            if (next >= 0 && next < currentGalleryPhotos.length) {
+                currentPhotoIndex = next;
+                updatePhotoViewer();
+            }
+        }
+
+        function downloadActivePhoto(event) {
+            if (event) event.stopPropagation();
+            if (currentGalleryPhotos.length === 0) return;
+            const relPath = currentGalleryPhotos[currentPhotoIndex];
+            const fname = relPath.split('/').pop();
+            triggerServerDownload(relPath, fname);
+        }
+
+        function closePhotoViewer() {
+            const modal = document.getElementById('photoViewerModal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function openFileDialog(relPath, fileName, iconClass) {
+            currentFileDownloadRelativePath = relPath;
+            currentFileDownloadName = fileName;
+
+            document.getElementById('fileDialogName').textContent = fileName;
+            document.getElementById('fileDialogIcon').className = `fas ${iconClass}`;
+            document.getElementById('fileDownloadModal').style.display = 'flex';
+        }
+
+        function closeFileDialog() {
+            const modal = document.getElementById('fileDownloadModal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function downloadCurrentDialogFile() {
+            if (currentFileDownloadRelativePath) {
+                triggerServerDownload(currentFileDownloadRelativePath, currentFileDownloadName);
+                closeFileDialog();
+            }
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' || e.keyCode === 27) {
+                closePhotoViewer();
+                closeFileDialog();
+                closeHwModal();
+            }
+        });
+
+        async function searchHwById(customId = null) {
+            const input = document.getElementById('searchIdInput');
+            const targetId = customId || (input ? parseInt(input.value, 10) : null);
+
+            if (!targetId || isNaN(targetId)) return;
+
+            let task = currentLoadedTasks.find(t => t.id === targetId);
+
+            if (!task) {
+                try {
+                    const res = await fetch(`${API_URL}/api/homework/${targetId}`, { cache: 'no-store' });
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data && !data.error) {
+                            task = data;
+                            currentLoadedTasks.unshift(task);
+                            document.getElementById('hwContainer').innerHTML = currentLoadedTasks.map(item => renderHwCard(item)).join('');
+                        }
+                    }
+                } catch (e) {}
+            }
+
+            if (task) {
+                openHwModal(task.id);
+            } else {
+                alert(`Задание с ID #${targetId} не найдено.`);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const hwDatePicker = document.getElementById('hwDatePicker');
+            if (hwDatePicker) hwDatePicker.value = selectedDate;
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const targetId = urlParams.get('id');
+
+            if (targetId) {
+                searchHwById(parseInt(targetId, 10));
+            } else {
+                setMode('today');
+            }
+        });
+
+
+        let activeModalHwTask = null;
+
+        // Внутри функции openHwModal(taskId) первой строкой добавь:
+        // activeModalHwTask = task;
+
+        async function shareCurrentHw(btn) {
+            if (!activeModalHwTask) return;
+            const url = `${window.location.origin}${window.location.pathname}?id=${activeModalHwTask.id}`;
+            const title = `ДЗ по предмету ${activeModalHwTask.subject}`;
+            const text = `${activeModalHwTask.title} (сдать до ${activeModalHwTask.formatted_due_date || activeModalHwTask.due_date})`;
+
+            if (navigator.share) {
+                try {
+                    await navigator.share({ title, text, url });
+                    return;
+                } catch (e) {}
+            }
+
+            navigator.clipboard.writeText(url).then(() => {
+                btn.innerHTML = `<i class="fas fa-check text-emerald-500"></i> <span class="text-emerald-500">Скопировано!</span>`;
+                setTimeout(() => {
+                    btn.innerHTML = `<i class="fas fa-share-alt"></i> <span>Поделиться</span>`;
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
