@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>theBser — Домашние задания 8Б</title>
 
-
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
     (function(m,e,t,r,i,k,a){
@@ -19,9 +18,6 @@
 </script>
 <noscript><div><img src="https://mc.yandex.ru/watch/111460868" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 <!-- /Yandex.Metrika counter -->
-
-
-
 
     <script>
         const initialTheme = localStorage.getItem('thebser_theme') || 'light';
@@ -74,79 +70,20 @@
             text-overflow: ellipsis;
         }
 
-        /* ===== 1. ПОЛНОЭКРАННЫЙ ПРОСМОТР ФОТО (LIGHTBOX) ===== */
-        #photoViewerModal {
-            position: fixed !important;
-            inset: 0 !important;
-            z-index: 99999 !important;
-            background: rgba(0, 0, 0, 0.92) !important;
-            backdrop-filter: blur(10px) !important;
-            display: flex;
-            flex-direction: column !important;
-            justify-content: space-between !important;
-            align-items: center !important;
-            padding: 12px !important;
-            overflow: hidden !important;
-        }
-
-        /* Контейнер фотки: min-height: 0 не дает фотке распирать окно за экран */
+        /* Лайтбокс: контейнер изображения с поддержкой зума */
         #viewerImgWrapper {
-            flex: 1 1 0% !important;
-            min-height: 0 !important;
-            min-width: 0 !important;
-            width: 100% !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            position: relative !important;
-            overflow: hidden !important;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
         }
-
-        /* Картинка: строго вписывается в экран по высоте и ширине на ПК и смартфонах */
         #viewerImage {
-            max-width: 94vw !important;
             max-height: 80vh !important;
-            width: auto !important;
-            height: auto !important;
+            max-width: 90vw !important;
             object-fit: contain !important;
-            border-radius: 1rem !important;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8) !important;
-            display: block !important;
-            margin: auto !important;
-        }
-
-        /* ===== 2. МОДАЛКА ДЗ (ДЛИННЫЙ ТЕКСТ) ===== */
-        #hwModal {
-            position: fixed !important;
-            inset: 0 !important;
-            z-index: 99990 !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            padding: 12px !important;
-            background: rgba(0, 0, 0, 0.6) !important;
-            backdrop-filter: blur(6px) !important;
-        }
-
-        /* Ограничиваем высоту модалки и включаем плавный внутренний скролл */
-        #hwModal > div {
-            max-height: 90vh !important;
-            max-width: 44rem !important;
-            width: 100% !important;
-            overflow-y: auto !important;
-            -webkit-overflow-scrolling: touch !important;
-            border-radius: 1.5rem !important;
-            box-sizing: border-box !important;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4) !important;
-        }
-
-        /* Красивый тонкий скроллбар */
-        #hwModal > div::-webkit-scrollbar {
-            width: 6px;
-        }
-        #hwModal > div::-webkit-scrollbar-thumb {
-            background: rgba(99, 102, 241, 0.4);
-            border-radius: 10px;
+            user-select: none !important;
+            -webkit-user-drag: none !important;
+            transition: transform 0.12s ease-out;
+            transform-origin: center center;
         }
     </style>
 </head>
@@ -180,17 +117,14 @@
         <div class="theme-card border rounded-3xl p-3.5 sm:p-5 shadow-sm mb-6">
             <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
                 
-                <!-- Кнопки выбора режима (стиль как в расписании) -->
-<div class="inline-flex items-center gap-1.5 p-1 rounded-2xl bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-xs font-bold self-start overflow-x-auto max-w-full">
-    <button id="btnModeToday" onclick="setMode('today')" class="thebser-tab-btn active">Сегодня</button>
-    <button id="btnModeTomorrow" onclick="setMode('tomorrow')" class="thebser-tab-btn inactive">Завтра</button>
-    <button id="btnModeDate" onclick="setMode('date')" class="thebser-tab-btn inactive">Число</button>
-    <button id="btnModeAll" onclick="setMode('all')" class="thebser-tab-btn inactive">Все активные</button>
-</div>
+                <div class="inline-flex items-center gap-1.5 p-1 rounded-2xl bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-xs font-bold self-start overflow-x-auto max-w-full">
+                    <button id="btnModeToday" onclick="setMode('today')" class="thebser-tab-btn active">Сегодня</button>
+                    <button id="btnModeTomorrow" onclick="setMode('tomorrow')" class="thebser-tab-btn inactive">Завтра</button>
+                    <button id="btnModeDate" onclick="setMode('date')" class="thebser-tab-btn inactive">Число</button>
+                    <button id="btnModeAll" onclick="setMode('all')" class="thebser-tab-btn inactive">Все активные</button>
+                </div>
 
-                <!-- Поиск, календарь и счетчик -->
                 <div class="flex flex-wrap items-center gap-2 justify-end">
-                    <!-- Календарь TheBser -->
                     <div id="datePickerWrapper" class="hidden relative w-full sm:w-auto">
                         <button type="button" id="hwCalendarToggleBtn" onclick="toggleCustomCalendar(event)" class="hw-input border px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center justify-between gap-2.5 w-full sm:w-auto shadow-sm transition hover:border-indigo-500">
                             <span class="flex items-center gap-2">
@@ -201,7 +135,6 @@
                         </button>
                         <input type="hidden" id="hwDatePicker" value="">
 
-                        <!-- Выпадающий календарь -->
                         <div id="hwCustomCalendar" onclick="event.stopPropagation()" class="hidden absolute top-full left-0 sm:left-auto sm:right-0 mt-2 z-50 theme-card border rounded-3xl p-4 shadow-2xl w-72 backdrop-blur-xl select-none animate-fadeIn">
                             <div class="flex items-center justify-between mb-3 pb-2 border-b border-gray-100 dark:border-gray-800">
                                 <button type="button" onclick="navigateCalMonth(-1)" class="w-8 h-8 rounded-xl flex items-center justify-center theme-card border hover:border-indigo-500 text-xs text-indigo-500 transition shadow-2xs">
@@ -226,7 +159,6 @@
                         </div>
                     </div>
 
-                    <!-- Выбор предмета -->
                     <div id="subjectPickerWrapper" class="hidden flex items-center gap-2 w-full sm:w-auto">
                         <select id="hwSubjectSelect" onchange="onSubjectChanged()" class="hw-input border px-3 py-1.5 rounded-xl text-xs font-semibold w-full sm:w-52 cursor-pointer">
                             <option value="">Все предметы</option>
@@ -249,7 +181,6 @@
                         </select>
                     </div>
 
-                    <!-- Поиск ID -->
                     <div class="flex items-center gap-1.5">
                         <div class="relative w-32 sm:w-36">
                             <input type="number" id="searchIdInput" placeholder="Поиск #ID..." onkeydown="if(event.key==='Enter') searchHwById()" class="hw-input border px-3 py-1.5 rounded-xl text-xs font-mono font-semibold w-full">
@@ -260,7 +191,6 @@
                         </button>
                     </div>
 
-                    <!-- Счётчик найдено -->
                     <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl border border-gray-200 dark:border-gray-800 text-xs font-medium theme-text-muted">
                         <i class="fas fa-tasks text-indigo-500"></i>
                         <span id="hwCountLabel">Найдено: 0</span>
@@ -270,7 +200,7 @@
             </div>
         </div>
 
-        <!-- КАРТОЧКИ ЗАДАНИЙ (2 КОЛОНКИ ВМЕСТО 3 ДЛЯ ПЛОТНОГО СТИЛЯ) -->
+        <!-- КАРТОЧКИ ЗАДАНИЙ -->
         <main id="hwContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4 pb-12">
             <div class="col-span-full text-center py-20">
                 <i class="fas fa-circle-notch fa-spin text-3xl text-indigo-500 mb-3"></i>
@@ -284,7 +214,7 @@
         </footer>
     </div>
 
-    <!-- 1. ПОЛНОРАЗМЕРНОЕ ОКНО ПРОСМОТРА ЗАДАНИЯ -->
+    <!-- 1. ПОЛНОРАЗМЕРНОЕ ОКНО ПРОСМОТРА ЗАДАНИЯ (ОРИГИНАЛЬНЫЙ СТИЛЬ) -->
     <div id="hwModal" onclick="closeHwModal()" style="display: none;" class="fixed inset-0 modal-blur-backdrop z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
         <div onclick="event.stopPropagation()" class="modal-dialog-zoom theme-card border rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl p-5 sm:p-7 relative flex flex-col justify-between">
             <div>
@@ -350,29 +280,55 @@
         </div>
     </div>
 
-    <!-- 2. LIGHTBOX ДЛЯ ФОТО -->
-    <div id="photoViewerModal" style="display: none;" class="fixed inset-0 modal-blur-backdrop z-50 flex flex-col items-center justify-between p-4">
-        <div class="w-full flex items-center justify-between max-w-5xl z-20 py-2">
+    <!-- 2. LIGHTBOX ДЛЯ ФОТО С ЗУМОМ И ПЕРЕМЕЩЕНИЕМ -->
+    <div id="photoViewerModal" style="display: none;" class="fixed inset-0 modal-blur-backdrop z-50 flex flex-col items-center justify-between p-3 sm:p-4">
+        <!-- Верхняя панель -->
+        <div class="w-full flex items-center justify-between max-w-5xl z-20 py-1 sm:py-2">
             <span id="viewerCounter" class="text-xs font-mono font-bold text-white bg-white/10 px-3 py-1.5 rounded-xl">1 из 1</span>
-            <div class="flex items-center gap-3">
-                <button onclick="downloadActivePhoto(event)" class="px-3.5 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold flex items-center gap-1.5 transition">
+            
+            <!-- Инструменты масштабирования -->
+            <div class="flex items-center gap-1 bg-white/15 backdrop-blur-md rounded-2xl p-1 text-white border border-white/10 shadow-lg">
+                <button type="button" onclick="zoomPhoto(-0.25, event)" class="w-8 h-8 rounded-xl hover:bg-white/20 flex items-center justify-center text-xs transition" title="Уменьшить">
+                    <i class="fas fa-search-minus"></i>
+                </button>
+                <button type="button" onclick="resetPhotoZoom(event)" id="zoomLevelIndicator" class="px-2.5 text-xs font-mono font-bold hover:bg-white/20 rounded-xl py-1 transition" title="Кликните для сброса">
+                    100%
+                </button>
+                <button type="button" onclick="zoomPhoto(0.25, event)" class="w-8 h-8 rounded-xl hover:bg-white/20 flex items-center justify-center text-xs transition" title="Увеличить">
+                    <i class="fas fa-search-plus"></i>
+                </button>
+                <button type="button" onclick="resetPhotoZoom(event)" class="w-8 h-8 rounded-xl hover:bg-white/20 flex items-center justify-center text-xs transition" title="Сбросить масштаб">
+                    <i class="fas fa-undo-alt text-[10px]"></i>
+                </button>
+            </div>
+
+            <div class="flex items-center gap-2 sm:gap-3">
+                <button onclick="downloadActivePhoto(event)" class="px-3.5 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold flex items-center gap-1.5 transition border border-white/10">
                     <i class="fas fa-download text-xs"></i>
-                    <span>Скачать фото</span>
+                    <span class="hidden sm:inline">Скачать фото</span>
                 </button>
                 <button onclick="closePhotoViewer()" class="text-white hover:text-red-400 text-3xl font-light leading-none p-1">&times;</button>
             </div>
         </div>
 
-        <div id="viewerImgWrapper" class="relative w-full max-w-5xl flex-1 flex items-center justify-center overflow-hidden my-auto cursor-pointer">
-            <button id="viewerPrevBtn" onclick="event.stopPropagation(); navigatePhoto(-1)" class="absolute left-2 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center text-lg z-30 transition border border-white/20">
+        <!-- Область отображения картинки -->
+        <div id="viewerImgWrapper" class="relative w-full max-w-5xl flex-1 flex items-center justify-center overflow-hidden my-auto" onclick="closePhotoViewer()">
+            <button id="viewerPrevBtn" onclick="event.stopPropagation(); navigatePhoto(-1)" class="absolute left-2 top-1/2 -translate-y-1/2 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center text-base sm:text-lg z-30 transition border border-white/20">
                 <i class="fas fa-chevron-left"></i>
             </button>
-            <img id="viewerImage" src="" alt="Просмотр фото" class="max-h-[82vh] max-w-full object-contain rounded-2xl shadow-2xl transition duration-200 cursor-default" onclick="event.stopPropagation()">
-            <button id="viewerNextBtn" onclick="event.stopPropagation(); navigatePhoto(1)" class="absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center text-lg z-30 transition border border-white/20">
+            
+            <img id="viewerImage" src="" alt="Просмотр фото" 
+                 class="rounded-2xl shadow-2xl" 
+                 onclick="event.stopPropagation()">
+
+            <button id="viewerNextBtn" onclick="event.stopPropagation(); navigatePhoto(1)" class="absolute right-2 top-1/2 -translate-y-1/2 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center text-base sm:text-lg z-30 transition border border-white/20">
                 <i class="fas fa-chevron-right"></i>
             </button>
         </div>
-        <div class="text-[11px] text-gray-400 py-2 pointer-events-none">Нажмите Escape или кликните по фону для выхода</div>
+
+        <div class="text-[11px] text-gray-400 py-1.5 text-center pointer-events-none">
+            Колёсико мыши — масштаб • Зажмите для перетаскивания • Двойной клик — приблизить
+        </div>
     </div>
 
     <!-- 3. ОКНО СКАЧИВАНИЯ НЕ-ФОТО ФАЙЛОВ -->
@@ -410,6 +366,14 @@
         let currentFileDownloadRelativePath = "";
         let currentFileDownloadName = "";
 
+        // Переменные масштабирования и перемещения фото
+        let currentZoom = 1;
+        let panX = 0;
+        let panY = 0;
+        let isDragging = false;
+        let dragStartX = 0;
+        let dragStartY = 0;
+
         function triggerServerDownload(relativePath, filename) {
             const url = `${API_URL}/api/download?file_path=${encodeURIComponent(relativePath)}`;
             const a = document.createElement('a');
@@ -427,7 +391,6 @@
             return `${year}-${month}-${day}`;
         }
 
-        // ТОЧНОЕ СОПОСТАВЛЕНИЕ ВСЕХ 16 ПРЕДМЕТОВ С ИХ ПОЛОСАМИ
         function getSubjectBarClass(subj) {
             const s = (subj || '').toLowerCase();
             if (s.includes('алгебр')) return 'bar-algebra';
@@ -449,7 +412,6 @@
             return 'bar-default';
         }
 
-        // ===== ЛОГИКА ФИРМЕННОГО КАЛЕНДАРЯ THEBSER =====
         const MONTH_NAMES_RU = [
             'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
             'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
@@ -475,7 +437,6 @@
 
             const isClosed = popup.classList.contains('hidden');
             if (isClosed) {
-                // Синхронизируем открываемый месяц с текущей выбранной датой
                 const [y, m] = selectedDate.split('-').map(Number);
                 calCurrentYear = y;
                 calCurrentMonth = m - 1;
@@ -513,7 +474,6 @@
             if (!gridEl) return;
 
             const firstDay = new Date(calCurrentYear, calCurrentMonth, 1).getDay();
-            // Сдвиг для понедельника: 0 - Пн, 6 - Вс
             const shift = (firstDay + 6) % 7;
             const daysInMonth = new Date(calCurrentYear, calCurrentMonth + 1, 0).getDate();
             const daysInPrevMonth = new Date(calCurrentYear, calCurrentMonth, 0).getDate();
@@ -523,13 +483,11 @@
 
             let html = '';
 
-            // Дни предыдущего месяца (серые)
             for (let i = shift - 1; i >= 0; i--) {
                 const dayNum = daysInPrevMonth - i;
                 html += `<span class="p-2 text-gray-300 dark:text-gray-700 pointer-events-none">${dayNum}</span>`;
             }
 
-            // Дни текущего месяца
             for (let day = 1; day <= daysInMonth; day++) {
                 const dayStr = String(day).padStart(2, '0');
                 const monthStr = String(calCurrentMonth + 1).padStart(2, '0');
@@ -570,7 +528,6 @@
             selectCalendarDate(getFormattedDate(new Date()));
         }
 
-        // Закрытие календаря при клике в любое место страницы
         document.addEventListener('click', (e) => {
             const wrapper = document.getElementById('datePickerWrapper');
             if (wrapper && !wrapper.contains(e.target)) {
@@ -579,42 +536,42 @@
         });
 
         function setMode(mode) {
-    activeMode = mode;
-    const modes = ['today', 'tomorrow', 'date', 'all'];
+            activeMode = mode;
+            const modes = ['today', 'tomorrow', 'date', 'all'];
 
-    modes.forEach(m => {
-        const btn = document.getElementById('btnMode' + capitalize(m));
-        if (btn) {
-            btn.className = (m === mode) ? "thebser-tab-btn active" : "thebser-tab-btn inactive";
+            modes.forEach(m => {
+                const btn = document.getElementById('btnMode' + capitalize(m));
+                if (btn) {
+                    btn.className = (m === mode) ? "thebser-tab-btn active" : "thebser-tab-btn inactive";
+                }
+            });
+
+            const datePicker = document.getElementById('datePickerWrapper');
+            const subjectPicker = document.getElementById('subjectPickerWrapper');
+
+            if (datePicker) datePicker.classList.add('hidden');
+            if (subjectPicker) subjectPicker.classList.add('hidden');
+
+            const now = new Date();
+
+            if (mode === 'today') {
+                selectedDate = getFormattedDate(now);
+                loadHomework({ date: selectedDate });
+            } else if (mode === 'tomorrow') {
+                const tomorrow = new Date(now);
+                tomorrow.setDate(now.getDate() + 1);
+                selectedDate = getFormattedDate(tomorrow);
+                loadHomework({ date: selectedDate });
+            } else if (mode === 'date') {
+                if (datePicker) datePicker.classList.remove('hidden');
+                const hwDatePicker = document.getElementById('hwDatePicker');
+                if (hwDatePicker) hwDatePicker.value = selectedDate;
+                loadHomework({ date: selectedDate });
+            } else if (mode === 'all') {
+                if (subjectPicker) subjectPicker.classList.remove('hidden');
+                loadHomework({ scope: 'all', subject: selectedSubject });
+            }
         }
-    });
-
-    const datePicker = document.getElementById('datePickerWrapper');
-    const subjectPicker = document.getElementById('subjectPickerWrapper');
-
-    if (datePicker) datePicker.classList.add('hidden');
-    if (subjectPicker) subjectPicker.classList.add('hidden');
-
-    const now = new Date();
-
-    if (mode === 'today') {
-        selectedDate = getFormattedDate(now);
-        loadHomework({ date: selectedDate });
-    } else if (mode === 'tomorrow') {
-        const tomorrow = new Date(now);
-        tomorrow.setDate(now.getDate() + 1);
-        selectedDate = getFormattedDate(tomorrow);
-        loadHomework({ date: selectedDate });
-    } else if (mode === 'date') {
-        if (datePicker) datePicker.classList.remove('hidden');
-        const hwDatePicker = document.getElementById('hwDatePicker');
-        if (hwDatePicker) hwDatePicker.value = selectedDate;
-        loadHomework({ date: selectedDate });
-    } else if (mode === 'all') {
-        if (subjectPicker) subjectPicker.classList.remove('hidden');
-        loadHomework({ scope: 'all', subject: selectedSubject });
-    }
-}
 
         function capitalize(s) {
             return s.charAt(0).toUpperCase() + s.slice(1);
@@ -709,7 +666,6 @@
 
         function renderHwCard(item) {
             const barClass = getSubjectBarClass(item.subject);
-            // Яркие контрастные статусы сдачи
             const statusHtml = item.is_overdue
                 ? `<span class="thebser-badge badge-status-amber"><i class="fas fa-clock text-[9px]"></i> Можно было сдать до ${item.formatted_due_date || item.due_date}</span>`
                 : `<span class="thebser-badge badge-status-green"><i class="fas fa-check-circle text-[9px]"></i> Можно сдать до ${item.formatted_due_date || item.due_date}</span>`;
@@ -754,8 +710,8 @@
             const task = currentLoadedTasks.find(t => t.id === taskId);
             if (!task) return;
 
-            activeModalHwTask = task; // Включаем кнопку «Поделиться»
-            history.replaceState(null, '', `?id=${task.id}`); // Синхронизируем URL для QR-кодов
+            activeModalHwTask = task;
+            history.replaceState(null, '', `?id=${task.id}`);
 
             const modal = document.getElementById('hwModal');
             if (!modal) return;
@@ -770,7 +726,6 @@
             document.getElementById('modalUpdatedAt').textContent = task.updated_at ? `(Изм.: ${task.updated_at})` : '';
             document.getElementById('modalTaskId').textContent = `ID задания: #${task.id}`;
 
-            // Статус сдачи: сочный зелёный или янтарный с иконкой
             const statusBadge = document.getElementById('modalStatusBadge');
             if (task.is_overdue) {
                 statusBadge.className = "thebser-badge badge-status-amber";
@@ -780,7 +735,6 @@
                 statusBadge.innerHTML = `<i class="fas fa-check-circle text-[10px]"></i> Можно сдать`;
             }
 
-            // Бейдж даты урока
             const dueDateBadge = document.getElementById('modalDueDateBadge');
             if (dueDateBadge) {
                 dueDateBadge.className = "thebser-badge badge-status-blue";
@@ -854,12 +808,54 @@
             history.replaceState(null, '', window.location.pathname);
         }
 
+        // ===== УПРАВЛЕНИЕ МАСШТАБОМ В ЛАЙТБОКСЕ (ZOOM & PAN) =====
+        function applyPhotoTransform() {
+            const img = document.getElementById('viewerImage');
+            const indicator = document.getElementById('zoomLevelIndicator');
+            if (!img) return;
+
+            if (currentZoom < 0.5) currentZoom = 0.5;
+            if (currentZoom > 4) currentZoom = 4;
+
+            if (currentZoom === 1) {
+                panX = 0;
+                panY = 0;
+                img.style.cursor = 'zoom-in';
+            } else {
+                img.style.cursor = isDragging ? 'grabbing' : 'grab';
+            }
+
+            img.style.transform = `translate(${panX}px, ${panY}px) scale(${currentZoom})`;
+            if (indicator) {
+                indicator.textContent = `${Math.round(currentZoom * 100)}%`;
+            }
+        }
+
+        function zoomPhoto(delta, event) {
+            if (event) event.stopPropagation();
+            currentZoom = Math.min(4, Math.max(0.5, Math.round((currentZoom + delta) * 100) / 100));
+            if (currentZoom === 1) {
+                panX = 0;
+                panY = 0;
+            }
+            applyPhotoTransform();
+        }
+
+        function resetPhotoZoom(event) {
+            if (event) event.stopPropagation();
+            currentZoom = 1;
+            panX = 0;
+            panY = 0;
+            applyPhotoTransform();
+        }
+
         function openPhotoViewerFromTask(taskId, imgIndex) {
             const task = currentLoadedTasks.find(t => t.id === taskId);
             if (!task) return;
 
             currentGalleryPhotos = task.media_files.filter(f => f.match(/\.(jpg|jpeg|png|webp)$/i));
             currentPhotoIndex = imgIndex >= 0 ? imgIndex : 0;
+            resetPhotoZoom();
             updatePhotoViewer();
 
             const modal = document.getElementById('photoViewerModal');
@@ -870,6 +866,7 @@
             if (currentGalleryPhotos.length === 0) return;
             const fullUrl = `${API_URL}${currentGalleryPhotos[currentPhotoIndex]}`;
 
+            resetPhotoZoom();
             document.getElementById('viewerImage').src = fullUrl;
             document.getElementById('viewerCounter').textContent = `${currentPhotoIndex + 1} из ${currentGalleryPhotos.length}`;
 
@@ -906,6 +903,7 @@
         function closePhotoViewer() {
             const modal = document.getElementById('photoViewerModal');
             if (modal) modal.style.display = 'none';
+            resetPhotoZoom();
         }
 
         function openFileDialog(relPath, fileName, iconClass) {
@@ -937,6 +935,97 @@
             }
         });
 
+        // Инициализация мыши и тача для зума
+        function initLightboxZoomControls() {
+            const wrapper = document.getElementById('viewerImgWrapper');
+            const img = document.getElementById('viewerImage');
+            if (!wrapper || !img) return;
+
+            // Зум колёсиком мыши
+            wrapper.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const delta = e.deltaY < 0 ? 0.25 : -0.25;
+                zoomPhoto(delta);
+            }, { passive: false });
+
+            // Двойной клик для зума 2x
+            img.addEventListener('dblclick', (e) => {
+                e.stopPropagation();
+                if (currentZoom > 1.2) {
+                    resetPhotoZoom();
+                } else {
+                    currentZoom = 2;
+                    applyPhotoTransform();
+                }
+            });
+
+            // Перетаскивание картинки мышкой
+            img.addEventListener('mousedown', (e) => {
+                if (currentZoom <= 1) return;
+                isDragging = true;
+                dragStartX = e.clientX - panX;
+                dragStartY = e.clientY - panY;
+                img.style.cursor = 'grabbing';
+                e.preventDefault();
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                panX = e.clientX - dragStartX;
+                panY = e.clientY - dragStartY;
+                applyPhotoTransform();
+            });
+
+            window.addEventListener('mouseup', () => {
+                if (isDragging) {
+                    isDragging = false;
+                    applyPhotoTransform();
+                }
+            });
+
+            // Поддержка жестов на смартфонах
+            let initialDistance = 0;
+            let initialZoom = 1;
+            let touchStartX = 0;
+            let touchStartY = 0;
+
+            wrapper.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 1 && currentZoom > 1) {
+                    isDragging = true;
+                    touchStartX = e.touches[0].clientX - panX;
+                    touchStartY = e.touches[0].clientY - panY;
+                } else if (e.touches.length === 2) {
+                    isDragging = false;
+                    initialDistance = Math.hypot(
+                        e.touches[0].clientX - e.touches[1].clientX,
+                        e.touches[0].clientY - e.touches[1].clientY
+                    );
+                    initialZoom = currentZoom;
+                }
+            }, { passive: true });
+
+            wrapper.addEventListener('touchmove', (e) => {
+                if (isDragging && e.touches.length === 1) {
+                    panX = e.touches[0].clientX - touchStartX;
+                    panY = e.touches[0].clientY - touchStartY;
+                    applyPhotoTransform();
+                } else if (e.touches.length === 2 && initialDistance > 0) {
+                    const dist = Math.hypot(
+                        e.touches[0].clientX - e.touches[1].clientX,
+                        e.touches[0].clientY - e.touches[1].clientY
+                    );
+                    currentZoom = Math.min(4, Math.max(0.5, initialZoom * (dist / initialDistance)));
+                    applyPhotoTransform();
+                }
+            }, { passive: true });
+
+            wrapper.addEventListener('touchend', (e) => {
+                if (e.touches.length === 0) {
+                    isDragging = false;
+                }
+            });
+        }
+
         async function searchHwById(customId = null) {
             const input = document.getElementById('searchIdInput');
             const targetId = customId || (input ? parseInt(input.value, 10) : null);
@@ -967,6 +1056,8 @@
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
+            initLightboxZoomControls();
+
             const hwDatePicker = document.getElementById('hwDatePicker');
             if (hwDatePicker) hwDatePicker.value = selectedDate;
 
@@ -980,11 +1071,7 @@
             }
         });
 
-
         let activeModalHwTask = null;
-
-        // Внутри функции openHwModal(taskId) первой строкой добавь:
-        // activeModalHwTask = task;
 
         async function shareCurrentHw(btn) {
             if (!activeModalHwTask) return;
